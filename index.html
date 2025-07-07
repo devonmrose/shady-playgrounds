@@ -1,74 +1,115 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Shady Playgrounds Map</title>
   <meta charset="utf-8" />
+  <title>Shady Playgrounds - Philly</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
-    crossorigin=""
-  />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <style>
-    #map { height: 100vh; margin: 0; padding: 0; }
-    body, html { margin: 0; height: 100%; }
+    #map { height: 100vh; }
+    .control-box {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: white;
+      z-index: 1000;
+      padding: 10px;
+      border-radius: 6px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
   </style>
 </head>
 <body>
+  <div class="control-box">
+    <label for="time">Time of Day:</label>
+    <select id="time">
+      <option value="08:00">Morning (8am)</option>
+      <option value="12:00">Midday (12pm)</option>
+      <option value="15:00">Afternoon (3pm)</option>
+      <option value="18:00">Evening (6pm)</option>
+    </select>
+  </div>
   <div id="map"></div>
 
-  <script
-    src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
-    crossorigin=""
-  ></script>
-
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/suncalc/suncalc.js"></script>
   <script>
-    // Initialize the map centered around Fishtown / Northern Liberties / Kensington, PA
-    const map = L.map('map').setView([39.975, -75.135], 14);
-
-    // Load OpenStreetMap tiles
+    const map = L.map('map').setView([39.973, -75.132], 14);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
 
-    // Load your playgrounds GeoJSON data
-    fetch('playgrounds.geojson')
-      .then(response => response.json())
-      .then(data => {
-        L.geoJSON(data, {
-          onEachFeature: function (feature, layer) {
-            const name = feature.properties.name || 'Unnamed Playground or Park';
-            layer.bindPopup(name);
-          },
-          pointToLayer: function (feature, latlng) {
-            return L.circleMarker(latlng, {
-              radius: 7,
-              fillColor: '#228B22',
-              color: '#006400',
-              weight: 1,
-              opacity: 1,
-              fillOpacity: 0.7,
-            });
-          },
-          style: function(feature) {
-            // Style polygons (parks) with fill and border colors
-            if (feature.geometry.type === 'Polygon' || feature.geometry.type === 'MultiPolygon') {
-              return {
-                color: '#006400',
-                weight: 2,
-                fillColor: '#7CFC00',
-                fillOpacity: 0.4,
-              };
-            }
-          }
-        }).addTo(map);
-      })
-      .catch(err => {
-        console.error('Error loading GeoJSON:', err);
-        alert('Failed to load playground data. Make sure playgrounds.geojson is in the same folder as this file.');
+    let playgroundLayer;
+
+    Promise.all([
+      fetch('playgrounds.geojson').then(res => res.json()),
+      fetch('trees.geojson').then(res => res.json())
+    ]).then(([playgroundsData, treesData]) => {
+
+      const trees = treesData.features.map(f => {
+        const height = parseFloat(f.properties.height) || 8; // Default height 8m
+        return {
+          lat: f.geometry.coordinates[1],
+          lng: f.geometry.coordinates[0],
+          height
+        };
       });
+
+      function updateMap(timeStr) {
+        if (playgroundLayer) map.removeLayer(playgroundLayer);
+
+        const date = new Date();
+        const [hh, mm] = timeStr.split(':');
+        date.setHours(hh, mm, 0, 0);
+
+        const features = playgroundsData.features.filter(pg => {
+          const pgCoord = {
+            lat: pg.geometry.coordinates[1],
+            lng: pg.geometry.coordinates[0]
+          };
+
+          const sun = SunCalc.getPosition(date, pgCoord.lat, pgCoord.lng);
+          const sunAlt = sun.altitude;
+          const sunAz = sun.azimuth;
+
+          if (sunAlt <= 0) return false; // Sun below horizon
+
+          const shadowDir = (sunAz + Math.PI) % (2 * Math.PI);
+          const sin = Math.sin(shadowDir);
+          const cos = Math.cos(shadowDir);
+
+          for (let tree of trees) {
+            const dLat = pgCoord.lat - tree.lat;
+            const dLng = pgCoord.lng - tree.lng;
+            const distance = Math.sqrt(dLat * dLat + dLng * dLng) * 111000; // degrees to meters
+
+            const angle = Math.atan2(dLat, dLng);
+            const diff = Math.abs(angle - shadowDir);
+            if (diff > 0.3) continue; // not in shadow path
+
+            const shadowLen = tree.height / Math.tan(sunAlt);
+            if (distance <= shadowLen) return true; // in shadow
+          }
+
+          return false;
+        });
+
+        playgroundLayer = L.geoJSON({ type: "FeatureCollection", features }, {
+          pointToLayer: (feature, latlng) => L.circleMarker(latlng, {
+            radius: 8,
+            color: "#0a0",
+            fillColor: "#0a0",
+            fillOpacity: 0.7
+          }).bindPopup(feature.properties.name || "Shady Spot")
+        }).addTo(map);
+      }
+
+      document.getElementById('time').addEventListener('change', e => {
+        updateMap(e.target.value);
+      });
+
+      updateMap(document.getElementById('time').value);
+    });
   </script>
 </body>
 </html>
