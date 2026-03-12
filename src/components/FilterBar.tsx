@@ -1,4 +1,5 @@
 import type { LocationType } from '../types';
+import { TYPE_EMOJIS } from '../constants';
 
 interface FilterOption {
   type: LocationType | null;
@@ -8,17 +9,17 @@ interface FilterOption {
 
 const FILTERS: FilterOption[] = [
   { type: null, label: 'All', emoji: '🗺️' },
-  { type: 'playground', label: 'Playgrounds', emoji: '🛝' },
-  { type: 'park', label: 'Parks', emoji: '🌳' },
-  { type: 'splash-pad', label: 'Splash Pads', emoji: '💦' },
-  { type: 'basketball-court', label: 'Basketball', emoji: '🏀' },
-  { type: 'tennis-court', label: 'Tennis', emoji: '🎾' },
-  { type: 'soccer-field', label: 'Soccer', emoji: '⚽' },
-  { type: 'skate-park', label: 'Skate Parks', emoji: '🛹' },
-  { type: 'rec-center', label: 'Rec Centers', emoji: '🏫' },
-  { type: 'open-field', label: 'Open Fields', emoji: '🌿' },
-  { type: 'multi-sport-court', label: 'Multi-Sport', emoji: '🏆' },
-  { type: 'pocket-park', label: 'Pocket Parks', emoji: '🌺' },
+  { type: 'playground', label: 'Playgrounds', emoji: TYPE_EMOJIS['playground'] },
+  { type: 'park', label: 'Parks', emoji: TYPE_EMOJIS['park'] },
+  { type: 'splash-pad', label: 'Splash Pads', emoji: TYPE_EMOJIS['splash-pad'] },
+  { type: 'basketball-court', label: 'Basketball', emoji: TYPE_EMOJIS['basketball-court'] },
+  { type: 'tennis-court', label: 'Tennis', emoji: TYPE_EMOJIS['tennis-court'] },
+  { type: 'soccer-field', label: 'Soccer', emoji: TYPE_EMOJIS['soccer-field'] },
+  { type: 'skate-park', label: 'Skate Parks', emoji: TYPE_EMOJIS['skate-park'] },
+  { type: 'rec-center', label: 'Rec Centers', emoji: TYPE_EMOJIS['rec-center'] },
+  { type: 'open-field', label: 'Open Fields', emoji: TYPE_EMOJIS['open-field'] },
+  { type: 'multi-sport-court', label: 'Multi-Sport', emoji: TYPE_EMOJIS['multi-sport-court'] },
+  { type: 'pocket-park', label: 'Pocket Parks', emoji: TYPE_EMOJIS['pocket-park'] },
 ];
 
 interface Props {

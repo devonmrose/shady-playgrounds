@@ -1,4 +1,5 @@
 import type { LocationType, CategoryInfo } from '../types';
+import { TYPE_EMOJIS } from '../constants';
 import { locations } from '../data/locations';
 import ThemeToggle from './ThemeToggle';
 
@@ -6,17 +7,17 @@ const SPOT_COUNT = locations.length;
 const NEIGHBORHOOD_COUNT = new Set(locations.map((l) => l.neighborhood)).size;
 
 const CATEGORIES: CategoryInfo[] = [
-  { type: 'playground', label: 'Playgrounds', emoji: '🛝', description: 'Swings, slides & climbing structures' },
-  { type: 'park', label: 'Parks', emoji: '🌳', description: 'Green spaces with shade trees' },
-  { type: 'splash-pad', label: 'Splash Pads', emoji: '💦', description: 'Water jets & spray grounds' },
-  { type: 'basketball-court', label: 'Basketball', emoji: '🏀', description: 'Outdoor hoops & pickup games' },
-  { type: 'tennis-court', label: 'Tennis', emoji: '🎾', description: 'Public courts in the city' },
-  { type: 'soccer-field', label: 'Soccer Fields', emoji: '⚽', description: 'Open grass fields for kicking around' },
-  { type: 'skate-park', label: 'Skate Parks', emoji: '🛹', description: 'Ramps & smooth surfaces' },
-  { type: 'rec-center', label: 'Rec Centers', emoji: '🏫', description: 'Community centers with outdoor play' },
-  { type: 'open-field', label: 'Open Fields', emoji: '🌿', description: 'Wide open grassy spaces' },
-  { type: 'multi-sport-court', label: 'Multi-Sport', emoji: '🏆', description: 'Courts for multiple activities' },
-  { type: 'pocket-park', label: 'Pocket Parks', emoji: '🌺', description: 'Small hidden neighborhood gems' },
+  { type: 'playground', label: 'Playgrounds', emoji: TYPE_EMOJIS['playground'], description: 'Swings, slides & climbing structures' },
+  { type: 'park', label: 'Parks', emoji: TYPE_EMOJIS['park'], description: 'Green spaces with shade trees' },
+  { type: 'splash-pad', label: 'Splash Pads', emoji: TYPE_EMOJIS['splash-pad'], description: 'Water jets & spray grounds' },
+  { type: 'basketball-court', label: 'Basketball', emoji: TYPE_EMOJIS['basketball-court'], description: 'Outdoor hoops & pickup games' },
+  { type: 'tennis-court', label: 'Tennis', emoji: TYPE_EMOJIS['tennis-court'], description: 'Public courts in the city' },
+  { type: 'soccer-field', label: 'Soccer Fields', emoji: TYPE_EMOJIS['soccer-field'], description: 'Open grass fields for kicking around' },
+  { type: 'skate-park', label: 'Skate Parks', emoji: TYPE_EMOJIS['skate-park'], description: 'Ramps & smooth surfaces' },
+  { type: 'rec-center', label: 'Rec Centers', emoji: TYPE_EMOJIS['rec-center'], description: 'Community centers with outdoor play' },
+  { type: 'open-field', label: 'Open Fields', emoji: TYPE_EMOJIS['open-field'], description: 'Wide open grassy spaces' },
+  { type: 'multi-sport-court', label: 'Multi-Sport', emoji: TYPE_EMOJIS['multi-sport-court'], description: 'Courts for multiple activities' },
+  { type: 'pocket-park', label: 'Pocket Parks', emoji: TYPE_EMOJIS['pocket-park'], description: 'Small hidden neighborhood gems' },
   { type: null, label: 'View All', emoji: '🗺️', description: 'Explore every spot in Philly' },
 ];
 

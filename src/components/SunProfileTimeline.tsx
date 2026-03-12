@@ -1,6 +1,12 @@
 import type { SunProfile, ShadeValue } from '../types';
 import { Sun, TreePine, Cloud } from 'lucide-react';
 
+function fmtHour(h: number): string {
+  if (h === 0) return '12 AM';
+  if (h === 12) return '12 PM';
+  return h < 12 ? `${h} AM` : `${h - 12} PM`;
+}
+
 interface Props {
   sunProfile: SunProfile;
 }
@@ -100,9 +106,7 @@ export default function SunProfileTimeline({ sunProfile }: Props) {
             Best: {bestPlayTime}
           </span>
           <span className="text-xs text-slate-500 dark:text-slate-400 ml-1.5">
-            ({bestHours.start <= 12 ? bestHours.start : bestHours.start - 12}{bestHours.start < 12 ? ' AM' : ' PM'}
-            {' – '}
-            {bestHours.end <= 12 ? bestHours.end : bestHours.end - 12}{bestHours.end < 12 ? ' AM' : ' PM'})
+            ({fmtHour(bestHours.start)} – {fmtHour(bestHours.end)})
           </span>
         </div>
       </div>
