@@ -1,10 +1,12 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 import { MapContainer, TileLayer, Marker, ZoomControl, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { ArrowLeft, Heart, Loader2, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Heart, Loader2, AlertTriangle, Navigation } from 'lucide-react';
 import type { Location, LocationType } from '../types';
 import { TYPE_EMOJIS } from '../constants';
+import { haversineDistance, formatDistance } from '../utils/distanceCalculator';
+import { useUserLocation } from '../hooks/useUserLocation';
 import FilterBar from './FilterBar';
 import LocationDetailPanel from './LocationDetailPanel';
 import ThemeToggle from './ThemeToggle';
@@ -45,6 +47,21 @@ function createMarkerIcon(location: Location, selected: boolean): L.DivIcon {
     popupAnchor: [0, -(size / 2)],
   });
 }
+
+const USER_LOCATION_ICON = L.divIcon({
+  className: '',
+  html: `
+    <div style="
+      width:18px;height:18px;
+      background:#3b82f6;
+      border:3px solid white;
+      border-radius:50%;
+      box-shadow:0 0 0 4px rgba(59,130,246,0.3), 0 2px 8px rgba(0,0,0,0.3);
+    "></div>
+  `,
+  iconSize: [18, 18],
+  iconAnchor: [9, 9],
+});
 
 /** Fly to a location when selected */
 function MapFlyTo({ coordinates }: { coordinates: [number, number] | null }) {
@@ -105,6 +122,7 @@ export default function MapView({
   const [mapError, setMapError] = useState(false);
   const [mapLoading, setMapLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const { coords: userCoords, status: locationStatus, request: requestLocation } = useUserLocation();
 
   useEffect(() => {
     const handleResize = () => {
@@ -115,11 +133,28 @@ export default function MapView({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // When Near Me is active, sort filtered locations by distance from user
+  const displayedLocations = useMemo(() => {
+    if (!userCoords) return filteredLocations;
+    return [...filteredLocations].sort(
+      (a, b) =>
+        haversineDistance(userCoords, a.coordinates) -
+        haversineDistance(userCoords, b.coordinates)
+    );
+  }, [filteredLocations, userCoords]);
+
   const tileUrl = isDark
     ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
     : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
 
   const tileAttribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>';
+
+  // Nearest spot distance label for the legend
+  const nearestLabel = useMemo(() => {
+    if (!userCoords || displayedLocations.length === 0) return null;
+    const d = haversineDistance(userCoords, displayedLocations[0].coordinates);
+    return `Nearest: ${formatDistance(d)}`;
+  }, [userCoords, displayedLocations]);
 
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-slate-100 dark:bg-slate-900">
@@ -159,6 +194,33 @@ export default function MapView({
 
           {/* Actions */}
           <div className="flex items-center gap-2 shrink-0">
+            {/* Near Me button */}
+            <button
+              onClick={requestLocation}
+              disabled={locationStatus === 'loading'}
+              title={
+                locationStatus === 'error'
+                  ? 'Location unavailable'
+                  : locationStatus === 'success'
+                  ? 'Re-center on my location'
+                  : 'Find spots near me'
+              }
+              className={`
+                relative flex items-center justify-center w-10 h-10 rounded-full
+                border shadow-sm hover:shadow-md transition-all duration-200
+                ${locationStatus === 'success'
+                  ? 'bg-blue-500 border-blue-400 text-white hover:bg-blue-600'
+                  : locationStatus === 'error'
+                  ? 'bg-white/90 dark:bg-slate-700/90 border-rose-300 dark:border-rose-700 text-rose-400'
+                  : 'bg-white/90 dark:bg-slate-700/90 border-slate-200 dark:border-slate-600 text-slate-400 hover:text-blue-500 hover:scale-110'
+                }
+                ${locationStatus === 'loading' ? 'animate-pulse' : ''}
+              `}
+              aria-label="Near me"
+            >
+              <Navigation size={15} strokeWidth={2} className={locationStatus === 'success' ? '' : ''} />
+            </button>
+
             <button
               onClick={onShowFavorites}
               className="relative flex items-center justify-center w-10 h-10 rounded-full bg-white/90 dark:bg-slate-700/90 border border-slate-200 dark:border-slate-600 shadow-sm hover:shadow-md transition-all duration-200 hover:scale-110"
@@ -218,8 +280,9 @@ export default function MapView({
                 }}
               />
 
+              {/* Fly to selected spot or user location */}
               <MapFlyTo
-                coordinates={selectedLocation ? selectedLocation.coordinates : null}
+                coordinates={selectedLocation ? selectedLocation.coordinates : userCoords}
               />
 
               {/* Dismiss panel on empty map click */}
@@ -227,7 +290,12 @@ export default function MapView({
                 <MapClickDismiss onDismiss={onCloseDetail} />
               )}
 
-              {filteredLocations.map((loc) => (
+              {/* User location dot */}
+              {userCoords && (
+                <Marker position={userCoords} icon={USER_LOCATION_ICON} zIndexOffset={2000} />
+              )}
+
+              {displayedLocations.map((loc) => (
                 <Marker
                   key={loc.id}
                   position={loc.coordinates}
@@ -249,7 +317,7 @@ export default function MapView({
               rounded-2xl shadow-lg border border-slate-100 dark:border-slate-700
               px-3 py-2 flex flex-col gap-2 font-body
             ">
-              {/* Spot count */}
+              {/* Spot count + near me info */}
               <div className="flex items-center justify-between gap-3">
                 <span className="text-[11px] font-bold text-slate-600 dark:text-slate-300">
                   {filteredLocations.length} spot{filteredLocations.length !== 1 ? 's' : ''} on map
@@ -263,6 +331,13 @@ export default function MapView({
                   </button>
                 )}
               </div>
+              {/* Nearest spot row (shown when Near Me is active) */}
+              {nearestLabel && (
+                <div className="flex items-center gap-1.5">
+                  <Navigation size={10} className="text-blue-500 shrink-0" />
+                  <span className="text-[11px] text-blue-600 dark:text-blue-400 font-semibold">{nearestLabel}</span>
+                </div>
+              )}
               {/* Legend */}
               <div className="flex items-center gap-3">
                 {[
@@ -289,7 +364,7 @@ export default function MapView({
             isFavorite={favoriteIds.includes(selectedLocation.id)}
             onToggleFavorite={onToggleFavorite}
             onClose={onCloseDetail}
-            onSelectLocation={(loc) => { onSelectLocation(loc); }}
+            onSelectLocation={onSelectLocation}
             isMobile={true}
           />
         )}
@@ -303,7 +378,7 @@ export default function MapView({
           isFavorite={favoriteIds.includes(selectedLocation.id)}
           onToggleFavorite={onToggleFavorite}
           onClose={onCloseDetail}
-          onSelectLocation={(loc) => { onSelectLocation(loc); }}
+          onSelectLocation={onSelectLocation}
           isMobile={false}
         />
       )}
