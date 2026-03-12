@@ -528,7 +528,692 @@ const rawLocations: RawLocation[] = [
     canopyEstimate: 25,
     neighborhood: "South Philadelphia",
   },
+
+  // ── SOUTH PHILADELPHIA (EXPANDED) ─────────────────────────────────────────
+  {
+    id: "jefferson-square",
+    name: "Jefferson Square Park",
+    type: "park",
+    coordinates: [39.9302, -75.1435],
+    description:
+      "A classic South Philly neighborhood square at 7th & Tasker with shade trees, benches, and a cheerful community atmosphere.",
+    tags: ["Neighborhood Square", "Shade Trees", "Benches", "South Philly"],
+    canopyEstimate: 50,
+    neighborhood: "South Philadelphia",
+    address: "7th & Tasker St",
+  },
+  {
+    id: "tasker-morris-park",
+    name: "Tasker Morris Park",
+    type: "pocket-park",
+    coordinates: [39.9204, -75.1686],
+    description:
+      "A small neighborhood pocket park in deep South Philly with benches, a compact play area, and mature street trees for dappled shade.",
+    tags: ["Pocket Park", "Small Play Area", "Dappled Shade", "Community Space"],
+    canopyEstimate: 48,
+    neighborhood: "South Philadelphia",
+  },
+  {
+    id: "seger-park",
+    name: "Seger Park",
+    type: "park",
+    coordinates: [39.9369, -75.1576],
+    description:
+      "Active neighborhood park at 10th & Fitzwater with basketball courts, a playground, and shade trees. Very popular with local kids after school.",
+    tags: ["Basketball", "Playground", "Shade Trees", "Active Park", "After School"],
+    canopyEstimate: 45,
+    neighborhood: "South Philadelphia",
+    address: "10th & Fitzwater St",
+  },
+  {
+    id: "capitolo-playground",
+    name: "Capitolo Playground",
+    type: "playground",
+    coordinates: [39.9163, -75.1712],
+    description:
+      "Well-equipped community playground in deep South Philly with climbing structures, slides, and shade trees. A beloved neighborhood staple.",
+    tags: ["Climbing Structures", "Slides", "South Philly", "Shade Trees", "Community Staple"],
+    canopyEstimate: 52,
+    neighborhood: "South Philadelphia",
+    address: "Patterson & 9th St",
+  },
+  {
+    id: "moyamensing-park",
+    name: "Moyamensing Park",
+    type: "park",
+    coordinates: [39.9133, -75.1636],
+    description:
+      "Spacious park in the Moyamensing neighborhood with open lawns, mature trees, and a classic South Philly community atmosphere.",
+    tags: ["Open Lawn", "Mature Trees", "South Philly", "Community Space"],
+    canopyEstimate: 55,
+    neighborhood: "South Philadelphia",
+  },
+  {
+    id: "whitman-park",
+    name: "Whitman Park",
+    type: "park",
+    coordinates: [39.9092, -75.1517],
+    description:
+      "Large South Philly park near Packer Park with sports fields, open green space, and shade trees along the perimeter.",
+    tags: ["Sports Fields", "Open Green", "Packer Park Area", "Shade Trees"],
+    canopyEstimate: 42,
+    neighborhood: "South Philadelphia",
+  },
+  {
+    id: "reed-street-playground",
+    name: "Reed Street Playground",
+    type: "playground",
+    coordinates: [39.9088, -75.1733],
+    description:
+      "Community playground in deep South Philly near the sports complex with updated equipment and shade trees along the fence.",
+    tags: ["Playground", "South Philly", "Sports Complex Area", "Updated Equipment"],
+    canopyEstimate: 38,
+    neighborhood: "South Philadelphia",
+  },
+  {
+    id: "newbold-pocket-park",
+    name: "Newbold Pocket Park",
+    type: "pocket-park",
+    coordinates: [39.9248, -75.1745],
+    description:
+      "A small community greenspace in Newbold with benches and community plantings — a welcoming block-level gathering point.",
+    tags: ["Community Greenspace", "Benches", "Newbold", "Block Park"],
+    canopyEstimate: 40,
+    neighborhood: "South Philadelphia",
+  },
+  {
+    id: "ellsworth-community-park",
+    name: "Ellsworth Community Park",
+    type: "pocket-park",
+    coordinates: [39.9378, -75.1605],
+    description:
+      "Small community park on the Graduate Hospital / South Philly border with shade trees and a compact play area.",
+    tags: ["Community Park", "Shade Trees", "Compact Play Area", "South Philly"],
+    canopyEstimate: 45,
+    neighborhood: "Graduate Hospital / South Philadelphia",
+  },
+  {
+    id: "weccacoe-playground",
+    name: "Weccacoe Playground",
+    type: "playground",
+    coordinates: [39.9397, -75.1434],
+    description:
+      "Well-maintained playground near Queen Village with great equipment, shade trees, and a small spray area. Very popular with young families.",
+    tags: ["Queen Village", "Great Equipment", "Shade Trees", "Spray Area", "Families"],
+    canopyEstimate: 52,
+    neighborhood: "Queen Village",
+    address: "Prime & Weccacoe St",
+  },
+
+  // ── CENTER CITY / FITLER SQUARE / PARKWAY (EXPANDED) ─────────────────────
+  {
+    id: "fitler-square",
+    name: "Fitler Square",
+    type: "park",
+    coordinates: [39.9481, -75.1784],
+    description:
+      "A gorgeous small square known for its beautiful gardens, mature shade trees, and a peaceful fountain. One of the most family-friendly spots in Center City.",
+    tags: ["Fountain", "Beautiful Gardens", "Shade Trees", "Family Friendly", "Fitler Square"],
+    canopyEstimate: 68,
+    neighborhood: "Fitler Square",
+    address: "23rd & Pine St",
+  },
+  {
+    id: "schuylkill-river-park",
+    name: "Schuylkill River Park",
+    type: "park",
+    coordinates: [39.9453, -75.1834],
+    description:
+      "Linear riverside park along the Schuylkill with a dog run, basketball courts, a playground, and great tree coverage along the path.",
+    tags: ["Riverside", "Dog Run", "Basketball", "Playground", "Schuylkill Trail"],
+    canopyEstimate: 58,
+    neighborhood: "Fitler Square / Graduate Hospital",
+    address: "25th St & Schuylkill River",
+  },
+  {
+    id: "sister-cities-park",
+    name: "Sister Cities Park",
+    type: "splash-pad",
+    coordinates: [39.9587, -75.1625],
+    description:
+      "Beautifully designed park on the Benjamin Franklin Parkway with an interactive splash fountain, shaded seating, and a café. A family favorite on the Parkway.",
+    tags: ["Splash Fountain", "Parkway", "Shaded Seating", "Café", "Family Favorite"],
+    canopyEstimate: 38,
+    neighborhood: "Center City / Fairmount",
+    address: "18th St & Benjamin Franklin Pkwy",
+  },
+  {
+    id: "logan-square-splash",
+    name: "Logan Square Swann Fountain",
+    type: "splash-pad",
+    coordinates: [39.9575, -75.1676],
+    description:
+      "The iconic Swann Memorial Fountain at Logan Square doubles as a beloved summertime splash zone. Kids play in the water jets around the main sculpture.",
+    tags: ["Iconic Fountain", "Summer Splash", "Parkway", "Historic", "Water Jets"],
+    canopyEstimate: 28,
+    neighborhood: "Logan Square",
+    address: "19th St & Benjamin Franklin Pkwy",
+  },
+  {
+    id: "taney-street-playground",
+    name: "Taney Street Playground",
+    type: "playground",
+    coordinates: [39.9404, -75.1768],
+    description:
+      "Neighborhood playground in Graduate Hospital with modern equipment, shade structures, and a small open lawn. A quiet gem.",
+    tags: ["Modern Equipment", "Shade Structures", "Graduate Hospital", "Safe Play"],
+    canopyEstimate: 45,
+    neighborhood: "Graduate Hospital",
+  },
+  {
+    id: "penn-landing-park",
+    name: "Penn's Landing Greenway",
+    type: "park",
+    coordinates: [39.9477, -75.1415],
+    description:
+      "Green promenade at Penn's Landing along the Delaware River with waterfront views, seasonal events, and some shaded seating areas.",
+    tags: ["Waterfront", "Promenade", "Delaware River", "Seasonal Events", "Old City"],
+    canopyEstimate: 22,
+    neighborhood: "Old City / Penn's Landing",
+    address: "Columbus Blvd & Walnut St",
+  },
+
+  // ── NORTH PHILADELPHIA ────────────────────────────────────────────────────
+  {
+    id: "hunting-park",
+    name: "Hunting Park",
+    type: "park",
+    coordinates: [40.0033, -75.1558],
+    description:
+      "One of North Philadelphia's largest and most beloved parks with a carousel, a spray ground, playing fields, and generous shade trees. A real community anchor.",
+    tags: ["Carousel", "Spray Ground", "Playing Fields", "Shade Trees", "North Philly", "Community Anchor"],
+    canopyEstimate: 65,
+    neighborhood: "Hunting Park",
+    address: "N 9th & Hunting Park Ave",
+  },
+  {
+    id: "hunting-park-splash",
+    name: "Hunting Park Spray Ground",
+    type: "splash-pad",
+    coordinates: [40.0036, -75.1553],
+    description:
+      "Seasonal spray ground inside Hunting Park, a beloved cooling spot for North Philly kids all summer long.",
+    tags: ["Spray Ground", "Summer Cool-off", "North Philly", "Kids Favorite"],
+    canopyEstimate: 20,
+    neighborhood: "Hunting Park",
+  },
+  {
+    id: "strawberry-mansion-meadow",
+    name: "Strawberry Mansion Meadow",
+    type: "open-field",
+    coordinates: [39.9842, -75.1905],
+    description:
+      "A sweeping open meadow in Fairmount Park near Strawberry Mansion with spectacular views, kite-flying space, and shaded grove areas nearby.",
+    tags: ["Open Meadow", "Kite Flying", "Shaded Grove", "Fairmount Park", "Scenic Views"],
+    canopyEstimate: 35,
+    neighborhood: "Strawberry Mansion",
+  },
+  {
+    id: "brewerytown-playground",
+    name: "Brewerytown Community Playground",
+    type: "playground",
+    coordinates: [39.9748, -75.1757],
+    description:
+      "Community playground near the Art Museum District with updated equipment, shade trees, and a fenced play area.",
+    tags: ["Community Playground", "Shade Trees", "Fenced", "Brewerytown", "Art Museum Area"],
+    canopyEstimate: 50,
+    neighborhood: "Brewerytown",
+  },
+  {
+    id: "gratz-park",
+    name: "Gratz Park",
+    type: "park",
+    coordinates: [40.0067, -75.1512],
+    description:
+      "Neighborhood park in Nicetown-Tioga with a basketball court, play equipment, and mature street trees. A local gathering spot.",
+    tags: ["Basketball", "Play Equipment", "Nicetown", "Community Park"],
+    canopyEstimate: 48,
+    neighborhood: "Nicetown-Tioga",
+  },
+  {
+    id: "glenwood-green",
+    name: "Glenwood Green Acres",
+    type: "park",
+    coordinates: [39.9952, -75.1585],
+    description:
+      "A reclaimed railroad bed turned greenway in North Philly with native plantings, shade trees, and a community garden. An innovative urban green space.",
+    tags: ["Reclaimed Rail", "Community Greenway", "Native Plants", "Community Garden", "Innovative"],
+    canopyEstimate: 45,
+    neighborhood: "North Philadelphia",
+  },
+  {
+    id: "tioga-playground",
+    name: "Tioga Playground",
+    type: "playground",
+    coordinates: [40.0115, -75.1648],
+    description:
+      "Large community playground in the Tioga neighborhood with basketball courts, spray features, and ample shade trees.",
+    tags: ["Basketball", "Spray Features", "Shade Trees", "Tioga", "Large Playground"],
+    canopyEstimate: 55,
+    neighborhood: "Tioga",
+  },
+  {
+    id: "temple-green",
+    name: "Temple University Green Space",
+    type: "park",
+    coordinates: [39.9807, -75.1515],
+    description:
+      "Open green spaces around Temple's main campus including shaded seating areas and courtyards accessible to the community.",
+    tags: ["University", "Shaded Seating", "Courtyards", "Public Access", "North Philly"],
+    canopyEstimate: 38,
+    neighborhood: "North Philadelphia / Temple",
+  },
+
+  // ── NORTHEAST PHILADELPHIA ────────────────────────────────────────────────
+  {
+    id: "juniata-park",
+    name: "Juniata Park",
+    type: "park",
+    coordinates: [40.0051, -75.1012],
+    description:
+      "A large Northeast Philly park with baseball diamonds, picnic areas, a recreation center, and mature shade trees. A destination for families across the area.",
+    tags: ["Baseball Diamonds", "Picnic Areas", "Rec Center", "Mature Trees", "Northeast Philly"],
+    canopyEstimate: 60,
+    neighborhood: "Juniata Park",
+    address: "M & Cayuga St",
+  },
+  {
+    id: "burholme-park",
+    name: "Burholme Park",
+    type: "park",
+    coordinates: [40.0722, -75.1142],
+    description:
+      "A scenic wooded park in the Oxford Circle area with tall trees, a creek, and picnic facilities. One of the Northeast's best shaded parks.",
+    tags: ["Wooded", "Creek", "Picnic Facilities", "Oxford Circle", "Great Shade"],
+    canopyEstimate: 75,
+    neighborhood: "Burholme / Oxford Circle",
+    address: "Central Ave & Cottman Ave",
+  },
+  {
+    id: "tacony-creek-park",
+    name: "Tacony Creek Park",
+    type: "park",
+    coordinates: [40.0523, -75.0964],
+    description:
+      "A long linear park following Tacony Creek through Northeast Philly with wooded trails, creek access, and excellent natural shade. Great for nature walks.",
+    tags: ["Creek Trail", "Wooded", "Nature Walk", "Linear Park", "Northeast"],
+    canopyEstimate: 82,
+    neighborhood: "Northeast Philadelphia",
+    address: "Adams Ave Trail",
+  },
+  {
+    id: "wissinoming-park",
+    name: "Wissinoming Park",
+    type: "park",
+    coordinates: [40.0243, -75.0728],
+    description:
+      "Neighborhood park in Wissinoming with a lake, picnic pavilions, sports courts, and a playground. Popular with families across the area.",
+    tags: ["Lake", "Picnic Pavilions", "Sports Courts", "Playground", "Wissinoming"],
+    canopyEstimate: 58,
+    neighborhood: "Wissinoming",
+    address: "Frankford Ave & Rhawn St",
+  },
+  {
+    id: "lardners-point",
+    name: "Lardner's Point Park",
+    type: "park",
+    coordinates: [40.0382, -75.0611],
+    description:
+      "Expansive park in Mayfair/Holmesburg along Pennypack Creek with playing fields, picnic areas, and wooded creek paths.",
+    tags: ["Pennypack Creek", "Playing Fields", "Picnic Areas", "Wooded Creek", "Mayfair"],
+    canopyEstimate: 62,
+    neighborhood: "Mayfair / Holmesburg",
+  },
+  {
+    id: "frankford-rec",
+    name: "Frankford Recreation Center",
+    type: "rec-center",
+    coordinates: [40.0219, -75.0913],
+    description:
+      "Community rec center in Frankford with basketball courts, playground equipment, and a summer spray ground. Active year-round.",
+    tags: ["Basketball", "Spray Ground", "Playground", "Community Center", "Frankford"],
+    canopyEstimate: 42,
+    neighborhood: "Frankford",
+    address: "Oxford Ave & Paul St",
+  },
+  {
+    id: "rhawnhurst-playground",
+    name: "Rhawnhurst Playground",
+    type: "playground",
+    coordinates: [40.0627, -75.0788],
+    description:
+      "Well-maintained playground in Rhawnhurst with climbing equipment, swings, and shade trees. Great for families in the Northeast.",
+    tags: ["Climbing Equipment", "Swings", "Shade Trees", "Rhawnhurst", "Northeast"],
+    canopyEstimate: 50,
+    neighborhood: "Rhawnhurst",
+  },
+  {
+    id: "fox-chase-rec",
+    name: "Fox Chase Recreation Center",
+    type: "rec-center",
+    coordinates: [40.0872, -75.0843],
+    description:
+      "Recreation center in Fox Chase with outdoor basketball, tennis courts, and a playground. The park adjacent has excellent shade from mature trees.",
+    tags: ["Basketball", "Tennis", "Playground", "Nature Adjacent", "Fox Chase"],
+    canopyEstimate: 58,
+    neighborhood: "Fox Chase",
+  },
+  {
+    id: "mayfair-playground",
+    name: "Mayfair Playground",
+    type: "playground",
+    coordinates: [40.0521, -75.0668],
+    description:
+      "Active neighborhood playground in Mayfair with spray features, climbing structures, and a basketball court with surrounding shade trees.",
+    tags: ["Spray Features", "Basketball", "Climbing Structures", "Mayfair", "Active"],
+    canopyEstimate: 45,
+    neighborhood: "Mayfair",
+  },
+  {
+    id: "holmesburg-park",
+    name: "Holmesburg Park",
+    type: "park",
+    coordinates: [40.0580, -75.0520],
+    description:
+      "Park in the Holmesburg neighborhood with open fields, a playground, recreation facilities, and shade trees perfect for summer picnics.",
+    tags: ["Open Fields", "Playground", "Picnic Spot", "Holmesburg", "Summer"],
+    canopyEstimate: 52,
+    neighborhood: "Holmesburg",
+  },
+  {
+    id: "tacony-palmetto",
+    name: "Tacony-Palmetto Park",
+    type: "park",
+    coordinates: [40.0173, -75.0706],
+    description:
+      "Neighborhood park in Tacony with a playground, basketball court, and shade trees. An active community park in the heart of Tacony.",
+    tags: ["Playground", "Basketball", "Shade Trees", "Tacony", "Active"],
+    canopyEstimate: 52,
+    neighborhood: "Tacony",
+  },
+  {
+    id: "rising-sun-courts",
+    name: "Rising Sun Multi-Sport Courts",
+    type: "multi-sport-court",
+    coordinates: [40.0290, -75.1259],
+    description:
+      "Outdoor multi-sport courts in the Rising Sun / Lawncrest area with basketball hoops and an open paved surface. Busy with youth sports.",
+    tags: ["Multi-Sport", "Basketball", "Youth Sports", "Rising Sun", "Northeast"],
+    canopyEstimate: 12,
+    neighborhood: "Lawncrest / Rising Sun",
+  },
+  {
+    id: "harrowgate-park",
+    name: "Harrowgate Park",
+    type: "park",
+    coordinates: [39.9990, -75.1120],
+    description:
+      "Classic Northeast-edge neighborhood park at Kensington with an active sports field, playground, basketball court, and mature shade trees.",
+    tags: ["Sports Field", "Playground", "Basketball", "Mature Trees", "Harrowgate"],
+    canopyEstimate: 55,
+    neighborhood: "Harrowgate / Kensington",
+  },
+  {
+    id: "mather-playground",
+    name: "Mather Playground",
+    type: "playground",
+    coordinates: [40.0472, -75.1422],
+    description:
+      "Community playground in the Lawncrest neighborhood with play equipment, a basketball area, and shade trees. A hub for local families.",
+    tags: ["Play Equipment", "Basketball", "Shade Trees", "Lawncrest", "Family Hub"],
+    canopyEstimate: 50,
+    neighborhood: "Lawncrest",
+  },
+
+  // ── WEST PHILADELPHIA (EXPANDED) ─────────────────────────────────────────
+  {
+    id: "cedar-park",
+    name: "Cedar Park",
+    type: "park",
+    coordinates: [39.9479, -75.2279],
+    description:
+      "A beautiful West Philly neighborhood park at 50th & Baltimore with mature shade trees, open lawn, and frequent community events. A go-to for Cedar Park families.",
+    tags: ["Mature Shade Trees", "Open Lawn", "Community Events", "West Philly", "Baltimore Ave"],
+    canopyEstimate: 70,
+    neighborhood: "Cedar Park",
+    address: "50th & Baltimore Ave",
+  },
+  {
+    id: "spruce-hill-park",
+    name: "Spruce Hill Park",
+    type: "park",
+    coordinates: [39.9527, -75.2190],
+    description:
+      "Serene neighborhood park in the heart of Spruce Hill with tall shade trees, benches, and a quiet atmosphere perfect for kids to play.",
+    tags: ["Tall Shade Trees", "Serene", "Benches", "Spruce Hill", "West Philly"],
+    canopyEstimate: 72,
+    neighborhood: "Spruce Hill",
+  },
+  {
+    id: "saunders-park",
+    name: "Saunders Park",
+    type: "park",
+    coordinates: [39.9583, -75.2333],
+    description:
+      "West Philly park near 57th street with a basketball court, playground, and community garden. Well shaded with mature trees.",
+    tags: ["Basketball", "Playground", "Community Garden", "Mature Trees", "West Philly"],
+    canopyEstimate: 60,
+    neighborhood: "West Philadelphia",
+    address: "57th & Locust St",
+  },
+  {
+    id: "haddington-rec",
+    name: "Haddington Recreation Center",
+    type: "rec-center",
+    coordinates: [39.9651, -75.2451],
+    description:
+      "Community rec center in Haddington with outdoor basketball courts, a baseball field, and playground areas. A busy after-school hub.",
+    tags: ["Basketball", "Baseball Field", "Playground", "Community Center", "Haddington"],
+    canopyEstimate: 48,
+    neighborhood: "Haddington",
+    address: "64th & Haverford Ave",
+  },
+  {
+    id: "overbrook-basketball",
+    name: "Overbrook Basketball Courts",
+    type: "basketball-court",
+    coordinates: [39.9703, -75.2531],
+    description:
+      "Outdoor basketball courts in Overbrook with evening shade from adjacent row houses. A popular spot for pickup games.",
+    tags: ["Basketball", "Outdoor Courts", "Overbrook", "Evening Shade", "Pickup Games"],
+    canopyEstimate: 15,
+    neighborhood: "Overbrook",
+  },
+  {
+    id: "clark-park-tennis",
+    name: "Clark Park Tennis Courts",
+    type: "tennis-court",
+    coordinates: [39.9444, -75.2105],
+    description:
+      "Public tennis courts at Clark Park shaded by the park's magnificent mature trees. Some of the best-shaded public courts in West Philly.",
+    tags: ["Tennis", "Shaded Courts", "Clark Park", "West Philly", "Public"],
+    canopyEstimate: 60,
+    neighborhood: "West Philadelphia",
+  },
+
+  // ── NORTHWEST PHILADELPHIA (EXPANDED) ────────────────────────────────────
+  {
+    id: "cresheim-valley",
+    name: "Cresheim Valley Trail",
+    type: "park",
+    coordinates: [40.0769, -75.2095],
+    description:
+      "A secluded wooded valley trail near Chestnut Hill with a dense tree canopy, creek sounds, and spectacular shade all day. A nature lover's paradise.",
+    tags: ["Wooded Valley", "Trail", "Creek", "Dense Canopy", "Secluded", "Chestnut Hill"],
+    canopyEstimate: 93,
+    neighborhood: "Chestnut Hill / Mt. Airy",
+  },
+  {
+    id: "mt-airy-playground",
+    name: "Mt. Airy Playground",
+    type: "playground",
+    coordinates: [40.0648, -75.1982],
+    description:
+      "Community playground in Mt. Airy with shade trees, climbing structures, and a friendly neighborhood atmosphere.",
+    tags: ["Shade Trees", "Climbing Structures", "Mt. Airy", "Community Vibe"],
+    canopyEstimate: 65,
+    neighborhood: "Mt. Airy",
+  },
+  {
+    id: "mt-airy-athletic",
+    name: "Mt. Airy Athletic Fields",
+    type: "open-field",
+    coordinates: [40.0697, -75.1922],
+    description:
+      "Open athletic fields in Mt. Airy adjacent to wooded areas. Great for pickup soccer and kite-flying with trees nearby for shade breaks.",
+    tags: ["Athletic Fields", "Soccer", "Kite Flying", "Wooded Adjacent", "Mt. Airy"],
+    canopyEstimate: 25,
+    neighborhood: "Mt. Airy",
+  },
+  {
+    id: "pelham-road-park",
+    name: "Pelham Road Park",
+    type: "park",
+    coordinates: [40.0753, -75.1976],
+    description:
+      "Small wooded park in Chestnut Hill with mature oaks and naturalistic play areas. Very shaded and peaceful — a neighborhood treasure.",
+    tags: ["Wooded", "Mature Oaks", "Naturalistic Play", "Chestnut Hill", "Peaceful"],
+    canopyEstimate: 80,
+    neighborhood: "Chestnut Hill",
+  },
+  {
+    id: "lovett-memorial-park",
+    name: "Lovett Memorial Library Park",
+    type: "pocket-park",
+    coordinates: [40.0338, -75.2375],
+    description:
+      "A small, charming pocket park adjacent to Lovett Memorial Library in Germantown with mature trees and quiet seating. A hidden gem.",
+    tags: ["Library Adjacent", "Mature Trees", "Hidden Gem", "Quiet", "Germantown"],
+    canopyEstimate: 68,
+    neighborhood: "Germantown",
+  },
+  {
+    id: "roxborough-playground",
+    name: "Roxborough Playground",
+    type: "playground",
+    coordinates: [40.0430, -75.2244],
+    description:
+      "Active community playground in Roxborough with well-maintained equipment, a basketball half-court, and shade trees near Wissahickon.",
+    tags: ["Well-Maintained", "Basketball Half-Court", "Shade Trees", "Roxborough"],
+    canopyEstimate: 58,
+    neighborhood: "Roxborough",
+  },
+  {
+    id: "shawmont-valley",
+    name: "Shawmont Valley Park",
+    type: "park",
+    coordinates: [40.0543, -75.2282],
+    description:
+      "A quiet, wooded valley park in upper Roxborough along the Schuylkill. Dense tree canopy and nature trails. Exceptional shade all day.",
+    tags: ["Wooded Valley", "Schuylkill Adjacent", "Nature Trails", "Dense Canopy", "Quiet"],
+    canopyEstimate: 87,
+    neighborhood: "Roxborough / Shawmont",
+  },
+
+  // ── FISHTOWN / PORT RICHMOND / BRIDESBURG ────────────────────────────────
+  {
+    id: "shackamaxon-park",
+    name: "Shackamaxon Street Park",
+    type: "pocket-park",
+    coordinates: [39.9758, -75.1353],
+    description:
+      "A small Fishtown pocket park on Shackamaxon Street with benches and shade trees. A quick shady stop in the neighborhood.",
+    tags: ["Pocket Park", "Fishtown", "Quick Stop", "Shade Benches"],
+    canopyEstimate: 38,
+    neighborhood: "Fishtown",
+  },
+  {
+    id: "fishtown-oval",
+    name: "Fishtown Community Oval",
+    type: "open-field",
+    coordinates: [39.9665, -75.1383],
+    description:
+      "Open community space on the Northern Liberties / Fishtown border used for pop-up events, informal play, and community gatherings.",
+    tags: ["Community Space", "Pop-up Events", "Informal Play", "Fishtown", "Northern Liberties"],
+    canopyEstimate: 18,
+    neighborhood: "Fishtown / Northern Liberties",
+  },
+  {
+    id: "gaul-street-park",
+    name: "Gaul Street Mini Park",
+    type: "pocket-park",
+    coordinates: [39.9759, -75.1294],
+    description:
+      "A tiny but charming Fishtown mini park on Gaul Street with young trees and benches. Part of the neighborhood's growing green infrastructure.",
+    tags: ["Mini Park", "Young Trees", "Fishtown", "Community Green"],
+    canopyEstimate: 32,
+    neighborhood: "Fishtown",
+  },
+  {
+    id: "east-girard-basketball",
+    name: "East Girard Basketball Courts",
+    type: "basketball-court",
+    coordinates: [39.9741, -75.1228],
+    description:
+      "Outdoor basketball courts near East Girard in Port Richmond. Open urban court — great for evening games when the sun is lower.",
+    tags: ["Basketball", "Outdoor", "Port Richmond", "Evening Games"],
+    canopyEstimate: 10,
+    neighborhood: "Port Richmond",
+  },
+  {
+    id: "port-richmond-park",
+    name: "Port Richmond Park",
+    type: "park",
+    coordinates: [39.9820, -75.1176],
+    description:
+      "Community park in Port Richmond with a playground, basketball court, and shade trees along the perimeter. Beloved neighborhood green space.",
+    tags: ["Playground", "Basketball", "Shade Trees", "Port Richmond", "Community"],
+    canopyEstimate: 50,
+    neighborhood: "Port Richmond",
+  },
+  {
+    id: "bridesburg-rec",
+    name: "Bridesburg Recreation Center",
+    type: "rec-center",
+    coordinates: [39.9989, -75.0820],
+    description:
+      "Recreation center in Bridesburg with outdoor courts, fields, and a playground. Serves the Bridesburg community with active programming year-round.",
+    tags: ["Outdoor Courts", "Fields", "Playground", "Bridesburg", "Community"],
+    canopyEstimate: 40,
+    neighborhood: "Bridesburg",
+    address: "Salmon St & Bridge St",
+  },
+
+  // ── KENSINGTON / NORTH PHILLY EXTRA ──────────────────────────────────────
+  {
+    id: "cambria-playground",
+    name: "Cambria Playground",
+    type: "playground",
+    coordinates: [39.9880, -75.1325],
+    description:
+      "Community playground in Kensington with fenced equipment, shade trees, and an active rec program. A safe neighborhood play space.",
+    tags: ["Fenced", "Shade Trees", "Rec Program", "Kensington", "Safe"],
+    canopyEstimate: 45,
+    neighborhood: "Kensington",
+  },
+  {
+    id: "emerald-street-park",
+    name: "Emerald Street Urban Farm & Park",
+    type: "pocket-park",
+    coordinates: [39.9704, -75.1437],
+    description:
+      "A community-managed urban farm and pocket park in Kensington / Northern Liberties with shade pergolas, community garden, and kids play areas.",
+    tags: ["Urban Farm", "Community Garden", "Shade Pergola", "Kensington", "Kids Area"],
+    canopyEstimate: 42,
+    neighborhood: "Kensington / Northern Liberties",
+  },
 ];
+
 
 /** Build full Location objects with computed shade scores and sun profiles */
 export const locations: Location[] = rawLocations.map((raw) => ({

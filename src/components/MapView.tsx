@@ -251,24 +251,41 @@ export default function MapView({
             </MapContainer>
           )}
 
-          {/* Floating shade legend */}
+          {/* Floating shade legend + spot count */}
           {!mapLoading && !mapError && (
             <div className="
               absolute bottom-4 left-3 z-20
               bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm
               rounded-2xl shadow-lg border border-slate-100 dark:border-slate-700
-              px-3 py-2 flex items-center gap-3 font-body
+              px-3 py-2 flex flex-col gap-2 font-body
             ">
-              {[
-                { color: 'bg-emerald-400', label: 'Full Shade' },
-                { color: 'bg-amber-300', label: 'Partial' },
-                { color: 'bg-orange-400', label: 'Sunny' },
-              ].map(({ color, label }) => (
-                <div key={label} className="flex items-center gap-1.5">
-                  <div className={`w-2.5 h-2.5 rounded-full ${color}`} />
-                  <span className="text-[11px] text-slate-500 dark:text-slate-400 font-semibold">{label}</span>
-                </div>
-              ))}
+              {/* Spot count */}
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-[11px] font-bold text-slate-600 dark:text-slate-300">
+                  {filteredLocations.length} spot{filteredLocations.length !== 1 ? 's' : ''} on map
+                </span>
+                {activeFilter && (
+                  <button
+                    onClick={() => onFilterChange(null)}
+                    className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 hover:underline"
+                  >
+                    Show all
+                  </button>
+                )}
+              </div>
+              {/* Legend */}
+              <div className="flex items-center gap-3">
+                {[
+                  { color: 'bg-emerald-400', label: 'Full Shade' },
+                  { color: 'bg-amber-300', label: 'Partial' },
+                  { color: 'bg-orange-400', label: 'Sunny' },
+                ].map(({ color, label }) => (
+                  <div key={label} className="flex items-center gap-1.5">
+                    <div className={`w-2.5 h-2.5 rounded-full ${color}`} />
+                    <span className="text-[11px] text-slate-500 dark:text-slate-400 font-semibold">{label}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
