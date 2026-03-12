@@ -1,115 +1,17 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8" />
-  <title>Shady Playgrounds - Philly</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-  <style>
-    #map { height: 100vh; }
-    .control-box {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      background: white;
-      z-index: 1000;
-      padding: 10px;
-      border-radius: 6px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    }
-  </style>
-</head>
-<body>
-  <div class="control-box">
-    <label for="time">Time of Day:</label>
-    <select id="time">
-      <option value="08:00">Morning (8am)</option>
-      <option value="12:00">Midday (12pm)</option>
-      <option value="15:00">Afternoon (3pm)</option>
-      <option value="18:00">Evening (6pm)</option>
-    </select>
-  </div>
-  <div id="map"></div>
-
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-  <script src="https://unpkg.com/suncalc/suncalc.js"></script>
-  <script>
-    const map = L.map('map').setView([39.973, -75.132], 14);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
-
-    let playgroundLayer;
-
-    Promise.all([
-      fetch('playgrounds.geojson').then(res => res.json()),
-      fetch('trees.geojson').then(res => res.json())
-    ]).then(([playgroundsData, treesData]) => {
-
-      const trees = treesData.features.map(f => {
-        const height = parseFloat(f.properties.height) || 8; // Default height 8m
-        return {
-          lat: f.geometry.coordinates[1],
-          lng: f.geometry.coordinates[0],
-          height
-        };
-      });
-
-      function updateMap(timeStr) {
-        if (playgroundLayer) map.removeLayer(playgroundLayer);
-
-        const date = new Date();
-        const [hh, mm] = timeStr.split(':');
-        date.setHours(hh, mm, 0, 0);
-
-        const features = playgroundsData.features.filter(pg => {
-          const pgCoord = {
-            lat: pg.geometry.coordinates[1],
-            lng: pg.geometry.coordinates[0]
-          };
-
-          const sun = SunCalc.getPosition(date, pgCoord.lat, pgCoord.lng);
-          const sunAlt = sun.altitude;
-          const sunAz = sun.azimuth;
-
-          if (sunAlt <= 0) return false; // Sun below horizon
-
-          const shadowDir = (sunAz + Math.PI) % (2 * Math.PI);
-          const sin = Math.sin(shadowDir);
-          const cos = Math.cos(shadowDir);
-
-          for (let tree of trees) {
-            const dLat = pgCoord.lat - tree.lat;
-            const dLng = pgCoord.lng - tree.lng;
-            const distance = Math.sqrt(dLat * dLat + dLng * dLng) * 111000; // degrees to meters
-
-            const angle = Math.atan2(dLat, dLng);
-            const diff = Math.abs(angle - shadowDir);
-            if (diff > 0.3) continue; // not in shadow path
-
-            const shadowLen = tree.height / Math.tan(sunAlt);
-            if (distance <= shadowLen) return true; // in shadow
-          }
-
-          return false;
-        });
-
-        playgroundLayer = L.geoJSON({ type: "FeatureCollection", features }, {
-          pointToLayer: (feature, latlng) => L.circleMarker(latlng, {
-            radius: 8,
-            color: "#0a0",
-            fillColor: "#0a0",
-            fillOpacity: 0.7
-          }).bindPopup(feature.properties.name || "Shady Spot")
-        }).addTo(map);
-      }
-
-      document.getElementById('time').addEventListener('change', e => {
-        updateMap(e.target.value);
-      });
-
-      updateMap(document.getElementById('time').value);
-    });
-  </script>
-</body>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌳</text></svg>" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TreePatch — Find Shady Play Spots in Philadelphia</title>
+    <meta name="description" content="Find shady outdoor places where kids can play in Philadelphia. Filter by playground, park, splash pad, and more." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>
