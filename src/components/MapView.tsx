@@ -1,0 +1,305 @@
+import { useEffect, useRef, useState } from 'react';
+import { MapContainer, TileLayer, Marker, ZoomControl, useMap, useMapEvents } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+import { ArrowLeft, Heart, Loader2, AlertTriangle } from 'lucide-react';
+import type { Location, LocationType } from '../types';
+import FilterBar from './FilterBar';
+import LocationDetailPanel from './LocationDetailPanel';
+import ThemeToggle from './ThemeToggle';
+
+const TYPE_EMOJIS: Record<string, string> = {
+  playground: '🛝',
+  park: '🌳',
+  'splash-pad': '💦',
+  'basketball-court': '🏀',
+  'tennis-court': '🎾',
+  'soccer-field': '⚽',
+  'skate-park': '🛹',
+  'rec-center': '🏫',
+  'multi-sport-court': '🏆',
+  'open-field': '🌿',
+  'pocket-park': '🌺',
+};
+
+const SHADE_HEX: Record<string, { bg: string; border: string }> = {
+  'full-shade': { bg: '#10b981', border: '#059669' },
+  'partial-shade': { bg: '#fbbf24', border: '#d97706' },
+  'mostly-sunny': { bg: '#f97316', border: '#ea580c' },
+};
+
+function createMarkerIcon(location: Location, selected: boolean): L.DivIcon {
+  const colors = SHADE_HEX[location.shadeScore] ?? { bg: '#94a3b8', border: '#64748b' };
+  const emoji = TYPE_EMOJIS[location.type] ?? '📍';
+  const size = selected ? 44 : 34;
+  const fontSize = selected ? 18 : 14;
+
+  return L.divIcon({
+    className: '',
+    html: `
+      <div style="
+        width:${size}px;
+        height:${size}px;
+        background:${colors.bg};
+        border:${selected ? '3px' : '2px'} solid ${selected ? 'white' : colors.border};
+        border-radius:50%;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        font-size:${fontSize}px;
+        box-shadow:${selected ? '0 0 0 3px ' + colors.bg + '66, 0 4px 12px rgba(0,0,0,0.35)' : '0 2px 8px rgba(0,0,0,0.25)'};
+        cursor:pointer;
+        transition:all 0.2s;
+        line-height:1;
+      ">${emoji}</div>
+    `,
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size / 2],
+    popupAnchor: [0, -(size / 2)],
+  });
+}
+
+/** Fly to a location when selected */
+function MapFlyTo({ coordinates }: { coordinates: [number, number] | null }) {
+  const map = useMap();
+  const prevCoord = useRef<[number, number] | null>(null);
+
+  useEffect(() => {
+    if (
+      coordinates &&
+      (prevCoord.current?.[0] !== coordinates[0] ||
+        prevCoord.current?.[1] !== coordinates[1])
+    ) {
+      map.flyTo(coordinates, Math.max(map.getZoom(), 15), { duration: 0.8 });
+      prevCoord.current = coordinates;
+    }
+  }, [coordinates, map]);
+
+  return null;
+}
+
+/** Dismiss the detail panel when the user clicks empty map space */
+function MapClickDismiss({ onDismiss }: { onDismiss: () => void }) {
+  useMapEvents({ click: onDismiss });
+  return null;
+}
+
+interface Props {
+  locations: Location[];
+  filteredLocations: Location[];
+  activeFilter: LocationType | null;
+  selectedLocation: Location | null;
+  favoriteIds: string[];
+  isDark: boolean;
+  onBack: () => void;
+  onSelectLocation: (loc: Location) => void;
+  onCloseDetail: () => void;
+  onFilterChange: (type: LocationType | null) => void;
+  onToggleFavorite: (id: string) => void;
+  onToggleTheme: () => void;
+  onShowFavorites: () => void;
+}
+
+export default function MapView({
+  locations,
+  filteredLocations,
+  activeFilter,
+  selectedLocation,
+  favoriteIds,
+  isDark,
+  onBack,
+  onSelectLocation,
+  onCloseDetail,
+  onFilterChange,
+  onToggleFavorite,
+  onToggleTheme,
+  onShowFavorites,
+}: Props) {
+  const [mapError, setMapError] = useState(false);
+  const [mapLoading, setMapLoading] = useState(true);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const tileUrl = isDark
+    ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+    : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+
+  const tileAttribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>';
+
+  return (
+    <div className="flex h-screen w-screen overflow-hidden bg-slate-100 dark:bg-slate-900">
+      {/* Main map area */}
+      <div className="flex-1 relative flex flex-col overflow-hidden">
+        {/* Top bar */}
+        <div className="
+          relative z-30 flex items-center gap-2 px-3 py-2
+          bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm
+          border-b border-slate-100 dark:border-slate-800
+          shadow-sm
+        ">
+          <button
+            onClick={onBack}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-semibold font-body text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0"
+          >
+            <ArrowLeft size={15} />
+            <span className="hidden sm:inline">Home</span>
+          </button>
+
+          {/* Logo */}
+          <div className="hidden md:flex items-center gap-1.5 shrink-0">
+            <span className="text-lg">🌳</span>
+            <span className="font-heading font-bold text-emerald-700 dark:text-emerald-400 text-sm">
+              TreePatch
+            </span>
+          </div>
+
+          {/* Filter bar */}
+          <div className="flex-1 min-w-0 overflow-hidden">
+            <FilterBar
+              activeFilter={activeFilter}
+              onFilterChange={onFilterChange}
+              resultCount={filteredLocations.length}
+            />
+          </div>
+
+          {/* Actions */}
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              onClick={onShowFavorites}
+              className="relative flex items-center justify-center w-10 h-10 rounded-full bg-white/90 dark:bg-slate-700/90 border border-slate-200 dark:border-slate-600 shadow-sm hover:shadow-md transition-all duration-200 hover:scale-110"
+              aria-label="Saved spots"
+            >
+              <Heart size={16} className={favoriteIds.length > 0 ? 'fill-rose-500 text-rose-500' : 'text-slate-400'} />
+              {favoriteIds.length > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">
+                  {favoriteIds.length}
+                </span>
+              )}
+            </button>
+            <ThemeToggle isDark={isDark} onToggle={onToggleTheme} />
+          </div>
+        </div>
+
+        {/* Map */}
+        <div className="flex-1 relative">
+          {mapLoading && !mapError && (
+            <div className="absolute inset-0 z-20 flex items-center justify-center bg-slate-100 dark:bg-slate-900">
+              <div className="flex flex-col items-center gap-3">
+                <div className="text-4xl animate-tree-sway">🌳</div>
+                <p className="font-body text-slate-500 dark:text-slate-400 text-sm">Loading the map…</p>
+                <Loader2 size={20} className="animate-spin text-emerald-500" />
+              </div>
+            </div>
+          )}
+
+          {mapError ? (
+            <div className="absolute inset-0 z-20 flex items-center justify-center bg-emerald-50 dark:bg-slate-900">
+              <div className="text-center p-8 max-w-sm">
+                <div className="text-6xl mb-4">🌳</div>
+                <div className="flex items-center justify-center gap-2 text-amber-600 dark:text-amber-400 mb-2">
+                  <AlertTriangle size={18} />
+                  <span className="font-heading font-semibold text-lg">Oops!</span>
+                </div>
+                <p className="font-body text-slate-600 dark:text-slate-300">
+                  The trees are being mysterious today. Map couldn't load — but here are all the spots!
+                </p>
+              </div>
+            </div>
+          ) : (
+            <MapContainer
+              center={[39.9526, -75.1652]}
+              zoom={13}
+              className="w-full h-full"
+              zoomControl={false}
+              whenReady={() => setMapLoading(false)}
+            >
+              <ZoomControl position="bottomright" />
+              <TileLayer
+                url={tileUrl}
+                attribution={tileAttribution}
+                errorTileUrl="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
+                eventHandlers={{
+                  tileerror: () => setMapError(true),
+                }}
+              />
+
+              <MapFlyTo
+                coordinates={selectedLocation ? selectedLocation.coordinates : null}
+              />
+
+              {/* Dismiss panel on empty map click */}
+              {selectedLocation && (
+                <MapClickDismiss onDismiss={onCloseDetail} />
+              )}
+
+              {filteredLocations.map((loc) => (
+                <Marker
+                  key={loc.id}
+                  position={loc.coordinates}
+                  icon={createMarkerIcon(loc, selectedLocation?.id === loc.id)}
+                  eventHandlers={{
+                    click: () => onSelectLocation(loc),
+                  }}
+                  zIndexOffset={selectedLocation?.id === loc.id ? 1000 : 0}
+                />
+              ))}
+            </MapContainer>
+          )}
+
+          {/* Floating shade legend */}
+          {!mapLoading && !mapError && (
+            <div className="
+              absolute bottom-4 left-3 z-20
+              bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm
+              rounded-2xl shadow-lg border border-slate-100 dark:border-slate-700
+              px-3 py-2 flex items-center gap-3 font-body
+            ">
+              {[
+                { color: 'bg-emerald-400', label: 'Full Shade' },
+                { color: 'bg-amber-300', label: 'Partial' },
+                { color: 'bg-orange-400', label: 'Sunny' },
+              ].map(({ color, label }) => (
+                <div key={label} className="flex items-center gap-1.5">
+                  <div className={`w-2.5 h-2.5 rounded-full ${color}`} />
+                  <span className="text-[11px] text-slate-500 dark:text-slate-400 font-semibold">{label}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+        </div>
+
+        {/* Mobile detail panel */}
+        {selectedLocation && isMobile && (
+          <LocationDetailPanel
+            location={selectedLocation}
+            allLocations={locations}
+            isFavorite={favoriteIds.includes(selectedLocation.id)}
+            onToggleFavorite={onToggleFavorite}
+            onClose={onCloseDetail}
+            onSelectLocation={(loc) => { onSelectLocation(loc); }}
+            isMobile={true}
+          />
+        )}
+      </div>
+
+      {/* Desktop: right panel */}
+      {selectedLocation && !isMobile && (
+        <LocationDetailPanel
+          location={selectedLocation}
+          allLocations={locations}
+          isFavorite={favoriteIds.includes(selectedLocation.id)}
+          onToggleFavorite={onToggleFavorite}
+          onClose={onCloseDetail}
+          onSelectLocation={(loc) => { onSelectLocation(loc); }}
+          isMobile={false}
+        />
+      )}
+    </div>
+  );
+}
