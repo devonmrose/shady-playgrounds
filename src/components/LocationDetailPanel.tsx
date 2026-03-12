@@ -1,37 +1,10 @@
 import { Heart, X, MapPin, ChevronDown } from 'lucide-react';
 import type { Location } from '../types';
+import { TYPE_EMOJIS, TYPE_LABELS } from '../constants';
 import { SHADE_LABELS, SHADE_COLORS } from '../utils/shadeCalculator';
 import SunProfileTimeline from './SunProfileTimeline';
 import NearbyLocations from './NearbyLocations';
 import ShareButton from './ShareButton';
-
-const TYPE_EMOJIS: Record<string, string> = {
-  playground: '🛝',
-  park: '🌳',
-  'splash-pad': '💦',
-  'basketball-court': '🏀',
-  'tennis-court': '🎾',
-  'soccer-field': '⚽',
-  'skate-park': '🛹',
-  'rec-center': '🏫',
-  'multi-sport-court': '🏆',
-  'open-field': '🌿',
-  'pocket-park': '🌺',
-};
-
-const TYPE_LABELS: Record<string, string> = {
-  playground: 'Playground',
-  park: 'Park',
-  'splash-pad': 'Splash Pad',
-  'basketball-court': 'Basketball Court',
-  'tennis-court': 'Tennis Court',
-  'soccer-field': 'Soccer Field',
-  'skate-park': 'Skate Park',
-  'rec-center': 'Rec Center',
-  'multi-sport-court': 'Multi-Sport Court',
-  'open-field': 'Open Field',
-  'pocket-park': 'Pocket Park',
-};
 
 interface Props {
   location: Location;

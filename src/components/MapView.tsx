@@ -4,23 +4,10 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { ArrowLeft, Heart, Loader2, AlertTriangle } from 'lucide-react';
 import type { Location, LocationType } from '../types';
+import { TYPE_EMOJIS } from '../constants';
 import FilterBar from './FilterBar';
 import LocationDetailPanel from './LocationDetailPanel';
 import ThemeToggle from './ThemeToggle';
-
-const TYPE_EMOJIS: Record<string, string> = {
-  playground: '🛝',
-  park: '🌳',
-  'splash-pad': '💦',
-  'basketball-court': '🏀',
-  'tennis-court': '🎾',
-  'soccer-field': '⚽',
-  'skate-park': '🛹',
-  'rec-center': '🏫',
-  'multi-sport-court': '🏆',
-  'open-field': '🌿',
-  'pocket-park': '🌺',
-};
 
 const SHADE_HEX: Record<string, { bg: string; border: string }> = {
   'full-shade': { bg: '#10b981', border: '#059669' },
@@ -120,7 +107,10 @@ export default function MapView({
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    const handleResize = () => {
+      const next = window.innerWidth < 768;
+      setIsMobile((prev) => (prev !== next ? next : prev));
+    };
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);

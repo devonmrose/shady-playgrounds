@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Share2, Check } from 'lucide-react';
 import type { Location } from '../types';
 
@@ -8,6 +8,13 @@ interface Props {
 
 export default function ShareButton({ location }: Props) {
   const [copied, setCopied] = useState(false);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
 
   const handleShare = async () => {
     const url = `${window.location.origin}${window.location.pathname}?location=${location.id}`;
@@ -15,8 +22,6 @@ export default function ShareButton({ location }: Props) {
 
     try {
       await navigator.clipboard.writeText(message);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2500);
     } catch {
       // fallback
       const el = document.createElement('textarea');
@@ -25,9 +30,11 @@ export default function ShareButton({ location }: Props) {
       el.select();
       document.execCommand('copy');
       document.body.removeChild(el);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2500);
     }
+
+    setCopied(true);
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(() => setCopied(false), 2500);
   };
 
   return (

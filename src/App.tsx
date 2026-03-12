@@ -50,7 +50,6 @@ export default function App() {
 
   const handleSelectLocation = useCallback((loc: Location) => {
     setSelectedLocation(loc);
-    // On desktop, keep the map view — detail panel appears on the side
   }, []);
 
   const handleCloseDetail = useCallback(() => {
@@ -61,10 +60,6 @@ export default function App() {
     setSelectedLocation(null);
     setView('home');
   }, []);
-
-  const handleToggleFavorite = useCallback((id: string) => {
-    toggleFavorite(id);
-  }, [toggleFavorite]);
 
   return (
     <div className={isDark ? 'dark' : ''}>
@@ -86,7 +81,7 @@ export default function App() {
           onSelectLocation={handleSelectLocation}
           onCloseDetail={handleCloseDetail}
           onFilterChange={setFilter}
-          onToggleFavorite={handleToggleFavorite}
+          onToggleFavorite={toggleFavorite}
           onToggleTheme={toggleTheme}
           onShowFavorites={() => setShowFavorites(true)}
         />
@@ -101,7 +96,7 @@ export default function App() {
             setView('map');
             setShowFavorites(false);
           }}
-          onToggleFavorite={handleToggleFavorite}
+          onToggleFavorite={toggleFavorite}
           onClose={() => setShowFavorites(false)}
         />
       )}

@@ -1,5 +1,9 @@
 import type { LocationType, CategoryInfo } from '../types';
+import { locations } from '../data/locations';
 import ThemeToggle from './ThemeToggle';
+
+const SPOT_COUNT = locations.length;
+const NEIGHBORHOOD_COUNT = new Set(locations.map((l) => l.neighborhood)).size;
 
 const CATEGORIES: CategoryInfo[] = [
   { type: 'playground', label: 'Playgrounds', emoji: '🛝', description: 'Swings, slides & climbing structures' },
@@ -71,11 +75,11 @@ export default function HomeScreen({ onSelectCategory, isDark, onToggleTheme }: 
         <div className="flex items-center gap-4 mt-5 text-sm font-semibold">
           <div className="flex items-center gap-1.5 bg-white/70 dark:bg-slate-800/70 px-3 py-1.5 rounded-full shadow-sm border border-emerald-100 dark:border-emerald-900">
             <span>🌳</span>
-            <span className="text-emerald-700 dark:text-emerald-300">40+ Spots</span>
+            <span className="text-emerald-700 dark:text-emerald-300">{SPOT_COUNT} Spots</span>
           </div>
           <div className="flex items-center gap-1.5 bg-white/70 dark:bg-slate-800/70 px-3 py-1.5 rounded-full shadow-sm border border-emerald-100 dark:border-emerald-900">
             <span>🏙️</span>
-            <span className="text-emerald-700 dark:text-emerald-300">10 Neighborhoods</span>
+            <span className="text-emerald-700 dark:text-emerald-300">{NEIGHBORHOOD_COUNT} Neighborhoods</span>
           </div>
         </div>
       </div>

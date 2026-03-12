@@ -1,21 +1,9 @@
+import { useMemo } from 'react';
 import type { Location, ShadeLevel } from '../types';
 import { haversineDistance, formatDistance } from '../utils/distanceCalculator';
 import { SHADE_LABELS, SHADE_COLORS } from '../utils/shadeCalculator';
+import { TYPE_EMOJIS } from '../constants';
 import { MapPin } from 'lucide-react';
-
-const TYPE_EMOJIS: Record<string, string> = {
-  playground: '🛝',
-  park: '🌳',
-  'splash-pad': '💦',
-  'basketball-court': '🏀',
-  'tennis-court': '🎾',
-  'soccer-field': '⚽',
-  'skate-park': '🛹',
-  'rec-center': '🏫',
-  'multi-sport-court': '🏆',
-  'open-field': '🌿',
-  'pocket-park': '🌺',
-};
 
 interface Props {
   currentLocation: Location;
@@ -24,15 +12,18 @@ interface Props {
 }
 
 export default function NearbyLocations({ currentLocation, allLocations, onSelectLocation }: Props) {
-  const nearby = allLocations
-    .filter((loc) => loc.id !== currentLocation.id)
-    .map((loc) => ({
-      loc,
-      distance: haversineDistance(currentLocation.coordinates, loc.coordinates),
-    }))
-    .filter(({ distance }) => distance <= 1.2)
-    .sort((a, b) => a.distance - b.distance)
-    .slice(0, 5);
+  const nearby = useMemo(() =>
+    allLocations
+      .filter((loc) => loc.id !== currentLocation.id)
+      .map((loc) => ({
+        loc,
+        distance: haversineDistance(currentLocation.coordinates, loc.coordinates),
+      }))
+      .filter(({ distance }) => distance <= 1.2)
+      .sort((a, b) => a.distance - b.distance)
+      .slice(0, 5),
+    [currentLocation.id, currentLocation.coordinates, allLocations]
+  );
 
   if (nearby.length === 0) {
     return (
