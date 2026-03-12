@@ -45,9 +45,9 @@ export default {
         },
       },
       animation: {
-        'slide-up': 'slide-up 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
-        'slide-in-right': 'slide-in-right 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
-        'fade-in': 'fade-in 0.4s ease-out',
+        'slide-up': 'slide-up 0.35s cubic-bezier(0.16, 1, 0.3, 1) both',
+        'slide-in-right': 'slide-in-right 0.35s cubic-bezier(0.16, 1, 0.3, 1) both',
+        'fade-in': 'fade-in 0.4s ease-out both',
         'bounce-gentle': 'bounce-gentle 2s ease-in-out infinite',
         'tree-sway': 'tree-sway 3s ease-in-out infinite',
       },

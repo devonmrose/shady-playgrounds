@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
-import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, ZoomControl, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { ArrowLeft, Heart, Loader2, AlertTriangle } from 'lucide-react';
 import type { Location, LocationType } from '../types';
-import { SHADE_COLORS } from '../utils/shadeCalculator';
 import FilterBar from './FilterBar';
 import LocationDetailPanel from './LocationDetailPanel';
 import ThemeToggle from './ThemeToggle';
@@ -76,6 +75,12 @@ function MapFlyTo({ coordinates }: { coordinates: [number, number] | null }) {
     }
   }, [coordinates, map]);
 
+  return null;
+}
+
+/** Dismiss the detail panel when the user clicks empty map space */
+function MapClickDismiss({ onDismiss }: { onDismiss: () => void }) {
+  useMapEvents({ click: onDismiss });
   return null;
 }
 
@@ -213,6 +218,7 @@ export default function MapView({
               zoomControl={false}
               whenReady={() => setMapLoading(false)}
             >
+              <ZoomControl position="bottomright" />
               <TileLayer
                 url={tileUrl}
                 attribution={tileAttribution}
@@ -225,6 +231,11 @@ export default function MapView({
               <MapFlyTo
                 coordinates={selectedLocation ? selectedLocation.coordinates : null}
               />
+
+              {/* Dismiss panel on empty map click */}
+              {selectedLocation && (
+                <MapClickDismiss onDismiss={onCloseDetail} />
+              )}
 
               {filteredLocations.map((loc) => (
                 <Marker
@@ -240,14 +251,27 @@ export default function MapView({
             </MapContainer>
           )}
 
-          {/* Mobile: bottom sheet overlay backdrop */}
-          {selectedLocation && isMobile && (
-            <div
-              className="absolute inset-0 z-30"
-              onClick={onCloseDetail}
-              style={{ background: 'transparent' }}
-            />
+          {/* Floating shade legend */}
+          {!mapLoading && !mapError && (
+            <div className="
+              absolute bottom-4 left-3 z-20
+              bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm
+              rounded-2xl shadow-lg border border-slate-100 dark:border-slate-700
+              px-3 py-2 flex items-center gap-3 font-body
+            ">
+              {[
+                { color: 'bg-emerald-400', label: 'Full Shade' },
+                { color: 'bg-amber-300', label: 'Partial' },
+                { color: 'bg-orange-400', label: 'Sunny' },
+              ].map(({ color, label }) => (
+                <div key={label} className="flex items-center gap-1.5">
+                  <div className={`w-2.5 h-2.5 rounded-full ${color}`} />
+                  <span className="text-[11px] text-slate-500 dark:text-slate-400 font-semibold">{label}</span>
+                </div>
+              ))}
+            </div>
           )}
+
         </div>
 
         {/* Mobile detail panel */}

@@ -23,7 +23,7 @@ export default function App() {
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
   const [showFavorites, setShowFavorites] = useState(false);
 
-  const { favorites, toggleFavorite, isFavorite } = useFavorites();
+  const { favorites, toggleFavorite } = useFavorites();
   const { isDark, toggleTheme } = useTheme();
   const { activeFilter, setFilter, filteredLocations } = useFilters(locations);
 
