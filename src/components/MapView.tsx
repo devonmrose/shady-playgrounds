@@ -264,8 +264,8 @@ export default function MapView({
             </div>
           ) : (
             <MapContainer
-              center={[39.9526, -75.1652]}
-              zoom={13}
+              center={[39.9928, -75.1526]}
+              zoom={12}
               className="w-full h-full"
               zoomControl={false}
               whenReady={() => setMapLoading(false)}
