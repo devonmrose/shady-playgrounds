@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import type { SunProfile, ShadeValue } from '../types';
 import { Sun, TreePine, Cloud } from 'lucide-react';
 
@@ -38,10 +39,24 @@ export default function SunProfileTimeline({ sunProfile }: Props) {
   const nightHours = displayHours.filter((h) => h.shade === 'night');
   const hasNight = nightHours.length > 0;
 
+  // Track current time for the "now" needle
+  const [nowHour, setNowHour] = useState(() => new Date().getHours() + new Date().getMinutes() / 60);
+  useEffect(() => {
+    const id = setInterval(() => {
+      setNowHour(new Date().getHours() + new Date().getMinutes() / 60);
+    }, 60_000);
+    return () => clearInterval(id);
+  }, []);
+
+  const START_HOUR = 6;
+  const END_HOUR = 21; // one past last segment (20)
+  const nowPct = Math.min(100, Math.max(0, ((nowHour - START_HOUR) / (END_HOUR - START_HOUR)) * 100));
+  const showNow = nowHour >= START_HOUR && nowHour <= END_HOUR;
+
   return (
     <div className="space-y-2 font-body">
       {/* Timeline bar */}
-      <div className="relative">
+      <div className="relative pt-5">
         <div className="flex items-stretch gap-0.5 h-7 w-full rounded-lg overflow-hidden">
           {displayHours.map((h) => {
             const isBest = h.hour >= bestHours.start && h.hour <= bestHours.end;
@@ -59,6 +74,23 @@ export default function SunProfileTimeline({ sunProfile }: Props) {
             );
           })}
         </div>
+
+        {/* "Now" needle */}
+        {showNow && (
+          <div
+            className="absolute top-0 bottom-0 flex flex-col items-center pointer-events-none"
+            style={{ left: `${nowPct}%`, transform: 'translateX(-50%)' }}
+          >
+            <div className="w-0.5 h-full bg-white/90 shadow-sm rounded-full" />
+            <span
+              className="absolute -top-5 text-[10px] font-bold text-slate-600 dark:text-slate-300 whitespace-nowrap"
+              style={{ textShadow: '0 0 4px white' }}
+            >
+              Now
+            </span>
+          </div>
+        )}
+
         {/* Best window highlight underline */}
         <div className="flex gap-0.5 mt-0.5 h-1">
           {displayHours.map((h) => {
