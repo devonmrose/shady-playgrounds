@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { MapContainer, TileLayer, Marker, ZoomControl, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -338,8 +339,10 @@ export default function MapView({
 
         </div>
 
-        {/* Mobile detail panel */}
-        {selectedLocation && isMobile && (
+      </div>
+
+        {/* Mobile detail panel — portalled to body to avoid overflow:hidden clipping on Android */}
+        {selectedLocation && isMobile && createPortal(
           <LocationDetailPanel
             location={selectedLocation}
             allLocations={locations}
@@ -348,9 +351,9 @@ export default function MapView({
             onClose={onCloseDetail}
             onSelectLocation={onSelectLocation}
             isMobile={true}
-          />
+          />,
+          document.body
         )}
-      </div>
 
       {/* Desktop: right panel */}
       {selectedLocation && !isMobile && (
