@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState, useMemo } from 'react';
+import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { MapContainer, TileLayer, Marker, ZoomControl, useMap, useMapEvents } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, ZoomControl, useMap, useMapEvents, GeoJSON } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import type { GeoJsonObject, Feature, Geometry } from 'geojson';
 import { ArrowLeft, Heart, Loader2, Navigation } from 'lucide-react';
 import type { Location } from '../types';
 import type { FilterType } from '../hooks/useFilters';
@@ -12,6 +13,16 @@ import { useUserLocation } from '../hooks/useUserLocation';
 import FilterBar from './FilterBar';
 import LocationDetailPanel from './LocationDetailPanel';
 import ThemeToggle from './ThemeToggle';
+
+/** Style GeoJSON polygons by leisure/landuse tag */
+function geoJSONStyle(feature?: Feature<Geometry>): L.PathOptions {
+  const p = feature?.properties ?? {};
+  if (p.leisure === 'park') return { color: '#16a34a', fillColor: '#22c55e', fillOpacity: 0.12, weight: 1.5, opacity: 0.45 };
+  if (p.leisure === 'playground') return { color: '#2563eb', fillColor: '#3b82f6', fillOpacity: 0.13, weight: 1.5, opacity: 0.45 };
+  if (p.leisure === 'pitch') return { color: '#b45309', fillColor: '#f59e0b', fillOpacity: 0.12, weight: 1.5, opacity: 0.4 };
+  if (p.landuse === 'grass') return { color: '#65a30d', fillColor: '#84cc16', fillOpacity: 0.12, weight: 1, opacity: 0.35 };
+  return { color: '#64748b', fillColor: '#94a3b8', fillOpacity: 0.08, weight: 1, opacity: 0.3 };
+}
 
 const SHADE_HEX: Record<string, { bg: string; border: string }> = {
   'full-shade': { bg: '#10b981', border: '#059669' },
@@ -123,7 +134,37 @@ export default function MapView({
 }: Props) {
   const [mapLoading, setMapLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [playgroundsGeoJSON, setPlaygroundsGeoJSON] = useState<GeoJsonObject | null>(null);
   const { coords: userCoords, status: locationStatus, request: requestLocation } = useUserLocation();
+
+  useEffect(() => {
+    fetch('/playgrounds.geojson')
+      .then((r) => r.json())
+      .then((data) => setPlaygroundsGeoJSON(data as GeoJsonObject))
+      .catch(() => { /* non-critical, silently skip */ });
+  }, []);
+
+  /** When a GeoJSON polygon is clicked, select the nearest known location */
+  const onEachFeature = useCallback((feature: Feature<Geometry>, layer: L.Layer) => {
+    layer.on('click', (e: L.LeafletMouseEvent) => {
+      L.DomEvent.stopPropagation(e);
+      const geom = feature.geometry;
+      let lat: number, lng: number;
+      if (geom.type === 'Polygon') {
+        const ring = (geom.coordinates as number[][][])[0];
+        lng = ring.reduce((s, c) => s + c[0], 0) / ring.length;
+        lat = ring.reduce((s, c) => s + c[1], 0) / ring.length;
+      } else if (geom.type === 'Point') {
+        [lng, lat] = geom.coordinates as number[];
+      } else return;
+      const nearest = locations.reduce((best, loc) => {
+        const d = Math.hypot(loc.coordinates[0] - lat, loc.coordinates[1] - lng);
+        const bd = Math.hypot(best.coordinates[0] - lat, best.coordinates[1] - lng);
+        return d < bd ? loc : best;
+      });
+      onSelectLocation(nearest);
+    });
+  }, [locations, onSelectLocation]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -263,6 +304,15 @@ export default function MapView({
                 attribution={tileAttribution}
                 errorTileUrl="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
               />
+
+              {/* Park/playground polygon boundaries from GeoJSON */}
+              {playgroundsGeoJSON && (
+                <GeoJSON
+                  data={playgroundsGeoJSON}
+                  style={geoJSONStyle}
+                  onEachFeature={onEachFeature}
+                />
+              )}
 
               {/* Fly to selected spot or user location */}
               <MapFlyTo
