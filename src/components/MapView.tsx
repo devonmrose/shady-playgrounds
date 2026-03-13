@@ -157,19 +157,19 @@ export default function MapView({
   }, [userCoords, displayedLocations]);
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-slate-100 dark:bg-slate-900">
+    <div className="flex h-[100dvh] w-screen overflow-hidden bg-cloud-white dark:bg-slate-900">
       {/* Main map area */}
       <div className="flex-1 relative flex flex-col overflow-hidden">
         {/* Top bar */}
         <div className="
           relative z-30 flex items-center gap-2 px-3 py-2
-          bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm
-          border-b border-slate-100 dark:border-slate-800
-          shadow-sm
+          bg-cloud-white/95 dark:bg-slate-900/95 backdrop-blur-sm
+          border-b-2 border-earth-brown/10 dark:border-slate-800
+          shadow-warm
         ">
           <button
             onClick={onBack}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-semibold font-body text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-bold font-heading text-earth-brown/70 dark:text-slate-300 hover:bg-earth-brown/10 dark:hover:bg-slate-800 transition-colors shrink-0"
           >
             <ArrowLeft size={15} />
             <span className="hidden sm:inline">Home</span>
@@ -178,7 +178,7 @@ export default function MapView({
           {/* Logo */}
           <div className="hidden md:flex items-center gap-1.5 shrink-0">
             <span className="text-lg">🌳</span>
-            <span className="font-heading font-bold text-emerald-700 dark:text-emerald-400 text-sm">
+            <span className="font-heading font-bold text-leafy-green text-sm">
               TreePatch
             </span>
           </div>
@@ -223,12 +223,12 @@ export default function MapView({
 
             <button
               onClick={onShowFavorites}
-              className="relative flex items-center justify-center w-10 h-10 rounded-full bg-white/90 dark:bg-slate-700/90 border border-slate-200 dark:border-slate-600 shadow-sm hover:shadow-md transition-all duration-200 hover:scale-110"
+              className="relative flex items-center justify-center w-10 h-10 rounded-full bg-cloud-white/90 dark:bg-slate-700/90 border-2 border-earth-brown/15 shadow-warm hover:shadow-warm-lg transition-all duration-200 hover:scale-110"
               aria-label="Saved spots"
             >
-              <Heart size={16} className={favoriteIds.length > 0 ? 'fill-rose-500 text-rose-500' : 'text-slate-400'} />
+              <Heart size={16} className={favoriteIds.length > 0 ? 'fill-sunset-orange text-sunset-orange' : 'text-earth-brown/40'} />
               {favoriteIds.length > 0 && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-sunset-orange text-white text-[9px] font-bold rounded-full flex items-center justify-center">
                   {favoriteIds.length}
                 </span>
               )}
@@ -240,11 +240,11 @@ export default function MapView({
         {/* Map */}
         <div className="flex-1 relative">
           {mapLoading && !mapError && (
-            <div className="absolute inset-0 z-20 flex items-center justify-center bg-slate-100 dark:bg-slate-900">
+            <div className="absolute inset-0 z-20 flex items-center justify-center bg-cloud-white dark:bg-slate-900">
               <div className="flex flex-col items-center gap-3">
                 <div className="text-4xl animate-tree-sway">🌳</div>
-                <p className="font-body text-slate-500 dark:text-slate-400 text-sm">Loading the map…</p>
-                <Loader2 size={20} className="animate-spin text-emerald-500" />
+                <p className="font-body text-earth-brown/60 dark:text-slate-400 text-sm font-semibold">Loading the map…</p>
+                <Loader2 size={20} className="animate-spin text-leafy-green" />
               </div>
             </div>
           )}
@@ -313,41 +313,41 @@ export default function MapView({
           {!mapLoading && !mapError && (
             <div className="
               absolute bottom-4 left-3 z-20
-              bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm
-              rounded-2xl shadow-lg border border-slate-100 dark:border-slate-700
+              bg-cloud-white/95 dark:bg-slate-800/95 backdrop-blur-sm
+              rounded-2xl shadow-warm border-2 border-earth-brown/10 dark:border-slate-700
               px-3 py-2 flex flex-col gap-2 font-body
             ">
               {/* Spot count + near me info */}
               <div className="flex items-center justify-between gap-3">
-                <span className="text-[11px] font-bold text-slate-600 dark:text-slate-300">
+                <span className="text-[11px] font-bold text-earth-brown dark:text-slate-300">
                   {filteredLocations.length} spot{filteredLocations.length !== 1 ? 's' : ''} on map
                 </span>
                 {activeFilter && (
                   <button
                     onClick={() => onFilterChange(null)}
-                    className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 hover:underline"
+                    className="text-[10px] font-bold text-leafy-green hover:underline"
                   >
                     Show all
                   </button>
                 )}
               </div>
-              {/* Nearest spot row (shown when Near Me is active) */}
+              {/* Nearest spot row */}
               {nearestLabel && (
                 <div className="flex items-center gap-1.5">
-                  <Navigation size={10} className="text-blue-500 shrink-0" />
-                  <span className="text-[11px] text-blue-600 dark:text-blue-400 font-semibold">{nearestLabel}</span>
+                  <Navigation size={10} className="text-sky-blue shrink-0" />
+                  <span className="text-[11px] text-sky-blue font-semibold">{nearestLabel}</span>
                 </div>
               )}
               {/* Legend */}
               <div className="flex items-center gap-3">
                 {[
-                  { color: 'bg-emerald-400', label: 'Full Shade' },
-                  { color: 'bg-amber-300', label: 'Partial' },
-                  { color: 'bg-orange-400', label: 'Sunny' },
+                  { color: 'bg-leafy-green', label: 'Full Shade' },
+                  { color: 'bg-sunshine-yellow', label: 'Partial' },
+                  { color: 'bg-sunset-orange', label: 'Sunny' },
                 ].map(({ color, label }) => (
                   <div key={label} className="flex items-center gap-1.5">
                     <div className={`w-2.5 h-2.5 rounded-full ${color}`} />
-                    <span className="text-[11px] text-slate-500 dark:text-slate-400 font-semibold">{label}</span>
+                    <span className="text-[11px] text-earth-brown/60 dark:text-slate-400 font-semibold">{label}</span>
                   </div>
                 ))}
               </div>

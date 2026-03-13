@@ -1,25 +1,41 @@
+import { motion, type Variants } from 'framer-motion';
 import type { LocationType, CategoryInfo } from '../types';
 import { TYPE_EMOJIS } from '../constants';
-import { locations } from '../data/locations';
+import CloudBackground from './CloudBackground';
+import WeatherIcon from './WeatherIcon';
 import ThemeToggle from './ThemeToggle';
 
-const SPOT_COUNT = locations.length;
-const NEIGHBORHOOD_COUNT = new Set(locations.map((l) => l.neighborhood)).size;
-
-const CATEGORIES: CategoryInfo[] = [
-  { type: 'playground', label: 'Playgrounds', emoji: TYPE_EMOJIS['playground'], description: 'Swings, slides & climbing structures' },
-  { type: 'park', label: 'Parks', emoji: TYPE_EMOJIS['park'], description: 'Green spaces with shade trees' },
-  { type: 'splash-pad', label: 'Splash Pads', emoji: TYPE_EMOJIS['splash-pad'], description: 'Water jets & spray grounds' },
-  { type: 'basketball-court', label: 'Basketball', emoji: TYPE_EMOJIS['basketball-court'], description: 'Outdoor hoops & pickup games' },
-  { type: 'tennis-court', label: 'Tennis', emoji: TYPE_EMOJIS['tennis-court'], description: 'Public courts in the city' },
-  { type: 'soccer-field', label: 'Soccer Fields', emoji: TYPE_EMOJIS['soccer-field'], description: 'Open grass fields for kicking around' },
-  { type: 'skate-park', label: 'Skate Parks', emoji: TYPE_EMOJIS['skate-park'], description: 'Ramps & smooth surfaces' },
-  { type: 'rec-center', label: 'Rec Centers', emoji: TYPE_EMOJIS['rec-center'], description: 'Community centers with outdoor play' },
-  { type: 'open-field', label: 'Open Fields', emoji: TYPE_EMOJIS['open-field'], description: 'Wide open grassy spaces' },
-  { type: 'multi-sport-court', label: 'Multi-Sport', emoji: TYPE_EMOJIS['multi-sport-court'], description: 'Courts for multiple activities' },
-  { type: 'pocket-park', label: 'Pocket Parks', emoji: TYPE_EMOJIS['pocket-park'], description: 'Small hidden neighborhood gems' },
-  { type: null, label: 'View All', emoji: '🗺️', description: 'Explore every spot in Philly' },
+const CATEGORIES: (CategoryInfo & { color: string; blob: number })[] = [
+  { type: 'playground',         label: 'Playgrounds',   emoji: TYPE_EMOJIS['playground'],         description: 'Swings, slides & climbing',     color: 'bg-leafy-green/20',       blob: 1 },
+  { type: 'park',               label: 'Parks',          emoji: TYPE_EMOJIS['park'],               description: 'Shaded green spaces',           color: 'bg-breezy-teal/20',       blob: 2 },
+  { type: 'splash-pad',         label: 'Splash Pads',    emoji: TYPE_EMOJIS['splash-pad'],         description: 'Water jets & spray grounds',    color: 'bg-sky-blue/20',          blob: 3 },
+  { type: 'basketball-court',   label: 'Basketball',     emoji: TYPE_EMOJIS['basketball-court'],   description: 'Outdoor hoops',                 color: 'bg-sunset-orange/20',     blob: 4 },
+  { type: 'tennis-court',       label: 'Tennis',         emoji: TYPE_EMOJIS['tennis-court'],       description: 'Public courts',                 color: 'bg-sunshine-yellow/30',   blob: 1 },
+  { type: 'soccer-field',       label: 'Soccer Fields',  emoji: TYPE_EMOJIS['soccer-field'],       description: 'Open grass for pickup',         color: 'bg-leafy-green/30',       blob: 2 },
+  { type: 'skate-park',         label: 'Skate Parks',    emoji: TYPE_EMOJIS['skate-park'],         description: 'Ramps & smooth surfaces',       color: 'bg-earth-brown/10',       blob: 3 },
+  { type: 'rec-center',         label: 'Rec Centers',    emoji: TYPE_EMOJIS['rec-center'],         description: 'Community outdoor spaces',      color: 'bg-breezy-teal/15',       blob: 4 },
+  { type: 'open-field',         label: 'Open Fields',    emoji: TYPE_EMOJIS['open-field'],         description: 'Wide open grassy spaces',       color: 'bg-sunshine-yellow/20',   blob: 1 },
+  { type: 'multi-sport-court',  label: 'Multi-Sport',    emoji: TYPE_EMOJIS['multi-sport-court'],  description: 'Courts for many activities',    color: 'bg-sunset-orange/15',     blob: 2 },
+  { type: 'pocket-park',        label: 'Pocket Parks',   emoji: TYPE_EMOJIS['pocket-park'],        description: 'Hidden neighborhood gems',      color: 'bg-leafy-green/15',       blob: 3 },
+  { type: null,                 label: 'View All',        emoji: '🗺️',                              description: 'Every shady spot in Philly',    color: 'bg-sunshine-yellow/40',   blob: 4 },
 ];
+
+const BLOB_CLASSES: Record<number, string> = {
+  1: 'rounded-blob-1',
+  2: 'rounded-blob-2',
+  3: 'rounded-blob-3',
+  4: 'rounded-blob-4',
+};
+
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.07 } },
+};
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 20, scale: 0.92 },
+  visible: { opacity: 1, y: 0, scale: 1, transition: { type: 'spring' as const, stiffness: 300, damping: 22 } },
+};
 
 interface Props {
   onSelectCategory: (type: LocationType | null) => void;
@@ -29,129 +45,115 @@ interface Props {
 
 export default function HomeScreen({ onSelectCategory, isDark, onToggleTheme }: Props) {
   return (
-    <div className="
-      min-h-screen w-full
-      bg-gradient-to-b from-sky-100 via-emerald-50 to-lime-100
-      dark:from-slate-900 dark:via-slate-800 dark:to-emerald-950
-      relative overflow-x-hidden
-      font-body
-    ">
-      {/* Theme toggle */}
-      <div className="absolute top-4 right-4 z-10">
+    <div className="min-h-screen w-full relative overflow-x-hidden flex flex-col bg-cloud-white text-earth-brown">
+      <CloudBackground />
+
+      {/* Header */}
+      <header className="relative z-10 w-full px-5 py-4 flex items-center justify-between bg-cloud-white/80 backdrop-blur-sm border-b-2 border-earth-brown/10 shadow-warm">
+        <motion.div
+          className="flex items-center gap-3"
+          initial={{ opacity: 0, x: -16 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <motion.div
+            animate={{ rotate: [-5, 5, -5] }}
+            transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            <WeatherIcon type="tree-canopy" size="md" />
+          </motion.div>
+          <div>
+            <h1 className="font-heading text-2xl font-bold text-leafy-green leading-none">TreePatch</h1>
+            <p className="font-body text-xs font-semibold text-earth-brown/60 leading-none mt-0.5">Philadelphia</p>
+          </div>
+        </motion.div>
         <ThemeToggle isDark={isDark} onToggle={onToggleTheme} />
-      </div>
+      </header>
 
-      {/* Decorative clouds */}
-      <div className="absolute top-6 left-8 text-4xl opacity-60 dark:opacity-20 pointer-events-none select-none animate-bounce-gentle" style={{ animationDelay: '0s' }}>
-        ☁️
-      </div>
-      <div className="absolute top-10 left-1/3 text-2xl opacity-40 dark:opacity-10 pointer-events-none select-none animate-bounce-gentle" style={{ animationDelay: '0.8s' }}>
-        ☁️
-      </div>
-      <div className="absolute top-4 right-20 text-3xl opacity-50 dark:opacity-15 pointer-events-none select-none animate-bounce-gentle" style={{ animationDelay: '1.5s' }}>
-        ☁️
-      </div>
+      {/* Hero */}
+      <main className="flex-1 relative z-10 flex flex-col items-center px-4 pt-8 pb-28 sm:pt-14 max-w-5xl mx-auto w-full">
+        <motion.div
+          className="text-center mb-10 sm:mb-14 relative"
+          initial={{ opacity: 0, y: -16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.55, ease: 'easeOut' }}
+        >
+          <motion.div
+            className="absolute -top-8 -left-8 sm:-left-14 z-[-1] opacity-30"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 40, repeat: Infinity, ease: 'linear' }}
+          >
+            <WeatherIcon type="sun" size="xl" />
+          </motion.div>
 
-      {/* Hero section */}
-      <div className="flex flex-col items-center pt-16 pb-8 px-4 text-center animate-fade-in">
-        {/* Tree illustration */}
-        <div className="relative mb-4">
-          <div className="text-7xl md:text-8xl animate-tree-sway drop-shadow-lg">🌳</div>
-          <div className="absolute -bottom-1 -right-4 text-4xl opacity-70 animate-tree-sway" style={{ animationDelay: '1s' }}>🌲</div>
-          <div className="absolute -bottom-1 -left-4 text-3xl opacity-60 animate-tree-sway" style={{ animationDelay: '0.5s' }}>🌿</div>
-        </div>
+          <h2 className="font-heading text-4xl sm:text-5xl font-extrabold text-earth-brown leading-tight max-w-2xl mx-auto">
+            Find the perfect patch of shade to play in Philly
+          </h2>
+          <p className="font-body text-base sm:text-lg font-semibold text-earth-brown/70 mt-4 max-w-xl mx-auto">
+            Philadelphia's guide to shaded outdoor play spaces for kids.
+          </p>
+        </motion.div>
 
-        {/* Brand */}
-        <h1 className="font-heading font-bold text-5xl md:text-6xl text-emerald-800 dark:text-emerald-300 mb-2 tracking-tight leading-none drop-shadow-sm">
-          TreePatch
-        </h1>
-        <p className="text-lg md:text-xl text-emerald-700 dark:text-emerald-400 font-semibold mb-1 max-w-sm">
-          Find shady spots for outdoor play
-        </p>
-        <p className="text-sm text-slate-500 dark:text-slate-400 max-w-xs">
-          Philadelphia's guide to cool, shaded places where kids can roam free ☀️
-        </p>
-
-        {/* Quick stats */}
-        <div className="flex items-center gap-4 mt-5 text-sm font-semibold">
-          <div className="flex items-center gap-1.5 bg-white/70 dark:bg-slate-800/70 px-3 py-1.5 rounded-full shadow-sm border border-emerald-100 dark:border-emerald-900">
-            <span>🌳</span>
-            <span className="text-emerald-700 dark:text-emerald-300">{SPOT_COUNT} Spots</span>
-          </div>
-          <div className="flex items-center gap-1.5 bg-white/70 dark:bg-slate-800/70 px-3 py-1.5 rounded-full shadow-sm border border-emerald-100 dark:border-emerald-900">
-            <span>🏙️</span>
-            <span className="text-emerald-700 dark:text-emerald-300">{NEIGHBORHOOD_COUNT} Neighborhoods</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Category section */}
-      <div className="max-w-2xl mx-auto px-4 pb-20 animate-fade-in" style={{ animationDelay: '0.15s' }}>
-        <h2 className="font-heading font-semibold text-center text-base text-slate-600 dark:text-slate-400 mb-5 tracking-wide uppercase text-xs">
-          What are you looking for?
-        </h2>
-
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          {CATEGORIES.map((cat, i) => {
+        {/* Category grid */}
+        <motion.div
+          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-5 w-full"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          {CATEGORIES.map((cat) => {
             const isViewAll = cat.type === null;
             return (
-              <button
+              <motion.button
                 key={cat.label}
+                variants={itemVariants}
                 onClick={() => onSelectCategory(cat.type)}
+                whileHover={{ scale: 1.05, y: -4 }}
+                whileTap={{ scale: 0.95 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 17 }}
                 className={`
-                  group relative flex flex-col items-center gap-2 p-4 rounded-2xl text-center
-                  transition-all duration-200
-                  hover:scale-105 hover:-translate-y-1 active:scale-95
-                  animate-fade-in
-                  ${isViewAll
-                    ? 'bg-emerald-600 dark:bg-emerald-700 text-white shadow-lg hover:shadow-emerald-200 dark:hover:shadow-emerald-900 col-span-2 sm:col-span-1 flex-row gap-3 justify-center'
-                    : 'bg-white/90 dark:bg-slate-800/90 text-slate-700 dark:text-slate-200 shadow-md hover:shadow-lg border border-emerald-50 dark:border-slate-700 hover:border-emerald-200 dark:hover:border-emerald-700'
-                  }
+                  flex flex-col items-center justify-center p-5 gap-2.5 w-full aspect-square
+                  ${cat.color}
+                  ${BLOB_CLASSES[cat.blob]}
+                  shadow-warm hover:shadow-warm-lg transition-shadow
+                  border-2 border-earth-brown/10
+                  focus:outline-none focus:ring-4 focus:ring-leafy-green/40
+                  ${isViewAll ? 'col-span-2 sm:col-span-1' : ''}
                 `}
-                style={{ animationDelay: `${i * 0.04}s` }}
               >
-                <span className={`transition-transform duration-200 group-hover:scale-110 ${isViewAll ? 'text-3xl' : 'text-3xl'}`}>
+                <motion.span
+                  className="text-3xl leading-none"
+                  whileHover={{ rotate: [-5, 5, -3, 3, 0] }}
+                  transition={{ duration: 0.4 }}
+                >
                   {cat.emoji}
-                </span>
-                <div className={isViewAll ? 'text-left' : ''}>
-                  <p className={`font-semibold leading-tight ${isViewAll ? 'text-base' : 'text-sm'}`}>
+                </motion.span>
+                <div className="text-center">
+                  <p className="font-heading font-bold text-sm sm:text-base text-earth-brown leading-tight">
                     {cat.label}
                   </p>
-                  <p className={`text-[11px] leading-tight mt-0.5 ${isViewAll ? 'text-emerald-100 dark:text-emerald-300' : 'text-slate-400 dark:text-slate-500'}`}>
+                  <p className="text-[10px] sm:text-xs font-semibold text-earth-brown/55 leading-tight mt-0.5 hidden sm:block">
                     {cat.description}
                   </p>
                 </div>
-                {/* Hover glow for non-view-all */}
-                {!isViewAll && (
-                  <div className="absolute inset-0 rounded-2xl bg-emerald-400/0 group-hover:bg-emerald-400/5 dark:group-hover:bg-emerald-400/10 transition-colors duration-200" />
-                )}
-              </button>
+              </motion.button>
             );
           })}
-        </div>
+        </motion.div>
 
-        {/* Subtext */}
-        <p className="text-center text-xs text-slate-400 dark:text-slate-500 mt-6 italic">
+        <p className="text-center text-xs text-earth-brown/40 mt-8 italic font-semibold">
           Shade ratings updated daily · Philadelphia, PA
         </p>
-      </div>
+      </main>
 
-      {/* Bottom tree silhouette */}
-      <div
-        className="fixed bottom-0 left-0 right-0 pointer-events-none select-none overflow-hidden"
-        style={{ height: '70px', zIndex: 0 }}
-      >
-        <div className="flex justify-around items-end h-full px-2 opacity-20 dark:opacity-10">
-          {['🌲', '🌳', '🌿', '🌲', '🌳', '🌿', '🌲', '🌳'].map((t, i) => (
-            <span
-              key={i}
-              className="text-3xl md:text-4xl animate-tree-sway"
-              style={{ animationDelay: `${i * 0.3}s`, animationDuration: `${3 + i * 0.4}s` }}
-            >
-              {t}
-            </span>
-          ))}
-        </div>
+      {/* Bottom wave decoration */}
+      <div className="fixed bottom-0 left-0 w-full h-28 pointer-events-none z-0 overflow-hidden">
+        <svg viewBox="0 0 1200 120" preserveAspectRatio="none" className="absolute bottom-0 w-full h-full fill-leafy-green/15">
+          <path d="M0,120 C150,100 350,0 600,60 C850,120 1050,40 1200,80 L1200,120 L0,120 Z" />
+        </svg>
+        <svg viewBox="0 0 1200 120" preserveAspectRatio="none" className="absolute bottom-0 w-full h-20 fill-leafy-green/20">
+          <path d="M0,120 C200,80 400,120 600,40 C800,-40 1000,80 1200,60 L1200,120 L0,120 Z" />
+        </svg>
       </div>
     </div>
   );
