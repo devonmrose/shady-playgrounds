@@ -341,7 +341,7 @@ export default function MapView({
 
       </div>
 
-        {/* Mobile detail panel — portalled to body to avoid overflow:hidden clipping on Android */}
+        {/* Mobile detail panel — portalled to avoid overflow:hidden clipping on Android/iOS */}
         {selectedLocation && isMobile && createPortal(
           <LocationDetailPanel
             location={selectedLocation}
@@ -352,7 +352,7 @@ export default function MapView({
             onSelectLocation={onSelectLocation}
             isMobile={true}
           />,
-          document.body
+          document.getElementById('portal-root')!
         )}
 
       {/* Desktop: right panel */}
