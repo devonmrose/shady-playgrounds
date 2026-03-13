@@ -2710,6 +2710,19 @@ const rawLocations: RawLocation[] = [
     neighborhood: "Northern Liberties",
     address: "110 Fairmount Ave",
   },
+
+  // ── MANUALLY VERIFIED PPR FACILITIES ──────────────────────────────────────
+  {
+    id: "shissler-recreation-center",
+    name: "Shissler Recreation Center",
+    type: "rec-center",
+    coordinates: [39.9773, -75.1238],
+    description: "Popular Fishtown neighborhood rec center on Blair Street with a fenced playground, basketball courts, and a spray park. One of the most-used PPR facilities in the area.",
+    tags: ["Playground", "Basketball", "Spray Park", "Fenced", "PPR", "Fishtown"],
+    canopyEstimate: 40,
+    neighborhood: "Fishtown",
+    address: "1800 E Blair St",
+  },
 ];
 
 
