@@ -6,6 +6,7 @@ import SunProfileTimeline from './SunProfileTimeline';
 import NearbyLocations from './NearbyLocations';
 import ShareButton from './ShareButton';
 import { useWeather } from '../hooks/useWeather';
+import { useMapillaryImage } from '../hooks/useMapillaryImage';
 
 interface Props {
   location: Location;
@@ -27,20 +28,31 @@ function osmEmbedUrl(lat: number, lng: number) {
 function LocationHero({ location }: { location: Location }) {
   const emoji = TYPE_EMOJIS[location.type] ?? '📍';
   const [lat, lng] = location.coordinates;
+  const photoUrl = useMapillaryImage(lat, lng);
 
   return (
-    <div className="relative w-full overflow-hidden" style={{ height: '180px' }}>
-      <iframe
-        key={location.id}
-        src={osmEmbedUrl(lat, lng)}
-        title={`Map of ${location.name}`}
-        style={{ border: 'none', width: '100%', height: '100%', display: 'block' }}
-        loading="lazy"
-        scrolling="no"
-      />
+    <div className="relative w-full overflow-hidden bg-slate-100 dark:bg-slate-700" style={{ height: '180px' }}>
+      {photoUrl ? (
+        <img
+          key={location.id}
+          src={photoUrl}
+          alt={location.name}
+          className="w-full h-full object-cover"
+          loading="lazy"
+        />
+      ) : (
+        <iframe
+          key={location.id}
+          src={osmEmbedUrl(lat, lng)}
+          title={`Map of ${location.name}`}
+          style={{ border: 'none', width: '100%', height: '100%', display: 'block' }}
+          loading="lazy"
+          scrolling="no"
+        />
+      )}
       {/* Gradient fade at bottom */}
-      <div className="absolute inset-x-0 bottom-0 h-10 pointer-events-none"
-        style={{ background: 'linear-gradient(to top, #FAFAF8, transparent)' }} />
+      <div className="absolute inset-x-0 bottom-0 h-12 pointer-events-none"
+        style={{ background: 'linear-gradient(to top, rgba(250,250,248,0.95), transparent)' }} />
       {/* Type badge */}
       <div className="absolute bottom-3 left-4 flex items-center gap-1.5 rounded-full px-2.5 py-1 border border-white/30 shadow"
         style={{ background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(6px)' }}>
@@ -49,6 +61,18 @@ function LocationHero({ location }: { location: Location }) {
           {TYPE_LABELS[location.type] ?? location.type}
         </span>
       </div>
+      {/* Mapillary attribution */}
+      {photoUrl && (
+        <a
+          href="https://www.mapillary.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="absolute bottom-3 right-3 text-[9px] text-white/70 hover:text-white transition-colors"
+          style={{ textShadow: '0 1px 3px rgba(0,0,0,0.6)' }}
+        >
+          © Mapillary
+        </a>
+      )}
     </div>
   );
 }
