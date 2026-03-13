@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Heart, X, MapPin, ChevronDown } from 'lucide-react';
 import type { Location } from '../types';
 import { TYPE_LABELS, TYPE_EMOJIS } from '../constants';
@@ -18,55 +17,45 @@ interface Props {
   isMobile: boolean;
 }
 
-/** Wikimedia static map tile — shows real OSM map of the exact location, no API key needed */
-function locationMapUrl(lat: number, lng: number, w = 800, h = 340) {
-  return `https://maps.wikimedia.org/img/osm-intl,17,${lng},${lat},${w}x${h}.png`;
-}
+const TYPE_GRADIENTS: Record<string, string> = {
+  playground:           'linear-gradient(135deg, #a8edbc 0%, #5CB85C 100%)',
+  park:                 'linear-gradient(135deg, #b8f0d4 0%, #3da876 100%)',
+  'splash-pad':         'linear-gradient(135deg, #b3e0f7 0%, #6BB5E0 100%)',
+  'basketball-court':   'linear-gradient(135deg, #ffd4a8 0%, #e8832a 100%)',
+  'tennis-court':       'linear-gradient(135deg, #fff0a0 0%, #d4b800 100%)',
+  'soccer-field':       'linear-gradient(135deg, #b8f0d4 0%, #4a9e5c 100%)',
+  'skate-park':         'linear-gradient(135deg, #d4c4b8 0%, #8D6E63 100%)',
+  'rec-center':         'linear-gradient(135deg, #a8e8e0 0%, #4aa8a0 100%)',
+  'open-field':         'linear-gradient(135deg, #d4f0b0 0%, #8ec84a 100%)',
+  'multi-sport-court':  'linear-gradient(135deg, #ffc8a8 0%, #d46030 100%)',
+  'pocket-park':        'linear-gradient(135deg, #f0d4f8 0%, #a06ab8 100%)',
+  'baseball-diamond':   'linear-gradient(135deg, #ffe4a8 0%, #c8902a 100%)',
+};
 
-function LocationImage({ location }: { location: Location }) {
-  const [loaded, setLoaded] = useState(false);
-  const [error, setError] = useState(false);
+function LocationHero({ location }: { location: Location }) {
   const emoji = TYPE_EMOJIS[location.type] ?? '📍';
+  const gradient = TYPE_GRADIENTS[location.type] ?? 'linear-gradient(135deg, #b8f0d4 0%, #5CB85C 100%)';
 
   return (
-    <div className="relative w-full overflow-hidden" style={{ height: '170px' }}>
-      {/* Skeleton while loading */}
-      {!loaded && !error && (
-        <div className="absolute inset-0 bg-leafy-green/10 animate-pulse flex items-center justify-center">
-          <span className="text-4xl opacity-30">{emoji}</span>
-        </div>
-      )}
-
-      {/* Fallback if map image fails */}
-      {error && (
-        <div className="absolute inset-0 bg-leafy-green/10 flex flex-col items-center justify-center gap-2">
-          <span className="text-4xl">{emoji}</span>
-          <span className="text-xs font-semibold text-earth-brown/40 font-body">{location.neighborhood}</span>
-        </div>
-      )}
-
-      {/* Map image */}
-      {!error && (
-        <img
-          src={locationMapUrl(location.coordinates[0], location.coordinates[1])}
-          alt={`Map of ${location.name}`}
-          onLoad={() => setLoaded(true)}
-          onError={() => setError(true)}
-          className={`w-full h-full object-cover transition-opacity duration-300 ${loaded ? 'opacity-100' : 'opacity-0'}`}
-          loading="lazy"
-        />
-      )}
-
-      {/* Bottom gradient fade */}
-      <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-cloud-white dark:from-slate-800 to-transparent" />
-
-      {/* Type badge bottom-left */}
-      <div className="absolute bottom-3 left-4 flex items-center gap-1.5 bg-cloud-white/90 dark:bg-slate-800/90 backdrop-blur-sm px-2.5 py-1 rounded-full border border-earth-brown/10 shadow-warm">
-        <span className="text-sm">{emoji}</span>
-        <span className="text-xs font-bold font-heading text-earth-brown dark:text-slate-200">
-          {TYPE_LABELS[location.type] ?? location.type}
-        </span>
-      </div>
+    <div
+      className="relative w-full flex flex-col items-center justify-center"
+      style={{
+        height: '160px',
+        background: gradient,
+      }}
+    >
+      {/* Subtle dot pattern overlay */}
+      <div
+        className="absolute inset-0 opacity-20"
+        style={{
+          backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.8) 1px, transparent 1px)',
+          backgroundSize: '18px 18px',
+        }}
+      />
+      <span className="relative text-6xl drop-shadow-md">{emoji}</span>
+      <span className="relative mt-2 text-xs font-bold font-heading text-white/80 uppercase tracking-widest drop-shadow">
+        {TYPE_LABELS[location.type] ?? location.type}
+      </span>
     </div>
   );
 }
@@ -137,9 +126,9 @@ export default function LocationDetailPanel({
         </div>
       )}
 
-      {/* Map image header */}
+      {/* Hero header */}
       <div className="shrink-0 relative">
-        <LocationImage location={location} />
+        <LocationHero location={location} />
         {/* Close button overlaid top-right */}
         <button
           onClick={onClose}

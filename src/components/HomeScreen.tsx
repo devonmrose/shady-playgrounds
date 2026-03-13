@@ -151,10 +151,10 @@ export default function HomeScreen({ onSelectCategory, isDark, onToggleTheme }: 
 
       {/* Bottom wave decoration */}
       <div className="fixed bottom-0 left-0 w-full h-28 pointer-events-none z-0 overflow-hidden">
-        <svg viewBox="0 0 1200 120" preserveAspectRatio="none" className="absolute bottom-0 w-full h-full fill-leafy-green/60">
+        <svg viewBox="0 0 1200 120" preserveAspectRatio="none" className="absolute bottom-0 w-full h-full" fill="rgba(92,184,92,0.6)">
           <path d="M0,120 C150,100 350,0 600,60 C850,120 1050,40 1200,80 L1200,120 L0,120 Z" />
         </svg>
-        <svg viewBox="0 0 1200 120" preserveAspectRatio="none" className="absolute bottom-0 w-full h-20 fill-leafy-green/80">
+        <svg viewBox="0 0 1200 120" preserveAspectRatio="none" className="absolute bottom-0 w-full h-20" fill="rgba(92,184,92,0.85)">
           <path d="M0,120 C200,80 400,120 600,40 C800,-40 1000,80 1200,60 L1200,120 L0,120 Z" />
         </svg>
       </div>
