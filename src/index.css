@@ -2,6 +2,27 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Design tokens ─────────────────────────────────────────────────────── */
+:root {
+  --leafy-green: #5CB85C;
+  --sky-blue: #6BB5E0;
+  --sunshine-yellow: #FFCB45;
+  --cloud-white: #F5F0E8;
+  --breezy-teal: #4DB6AC;
+  --sunset-orange: #FF8A65;
+  --earth-brown: #8D6E63;
+}
+
+.dark {
+  --leafy-green: #6EC96E;
+  --sky-blue: #7DC5EC;
+  --sunshine-yellow: #FFD966;
+  --cloud-white: #1E293B;
+  --breezy-teal: #5DC7BC;
+  --sunset-orange: #FF9F7B;
+  --earth-brown: #C4A99E;
+}
+
 @layer base {
   html {
     font-family: 'Nunito', system-ui, sans-serif;
@@ -10,12 +31,30 @@
   }
 
   body {
-    @apply bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100;
+    background-color: var(--cloud-white);
+    color: var(--earth-brown);
+    /* Paper texture */
+    background-image:
+      radial-gradient(rgba(141, 110, 99, 0.03) 1px, transparent 1px),
+      radial-gradient(rgba(141, 110, 99, 0.02) 1px, transparent 1px);
+    background-size: 20px 20px;
+    background-position: 0 0, 10px 10px;
     overflow-x: hidden;
+  }
+
+  .dark body {
+    background-image: none;
   }
 
   * {
     box-sizing: border-box;
+    /* Remove tap highlight on Android */
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button, a {
+    /* Faster touch response, prevents double-tap zoom on Android */
+    touch-action: manipulation;
   }
 }
 
@@ -27,6 +66,22 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+}
+
+/* ── Scrollbar ─────────────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--cloud-white);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--sky-blue);
+  border-radius: 10px;
+  border: 3px solid var(--cloud-white);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--breezy-teal);
 }
 
 /* ── Leaflet overrides ─────────────────────────────────────────────────── */
@@ -45,7 +100,6 @@
   border-radius: 8px 0 0 0 !important;
 }
 
-/* Styled zoom control */
 .leaflet-control-zoom {
   border: none !important;
   border-radius: 12px !important;
@@ -77,7 +131,6 @@
   border-bottom: none !important;
 }
 
-/* Dark mode zoom control */
 .dark .leaflet-control-zoom a {
   color: #e2e8f0 !important;
   background-color: rgba(30, 41, 59, 0.95) !important;
@@ -89,7 +142,6 @@
   color: #6ee7b7 !important;
 }
 
-/* Ensure proper z-index layering */
 .leaflet-pane {
   z-index: 1;
 }
@@ -99,7 +151,7 @@
   z-index: 10;
 }
 
-/* Prevent map popups from appearing (we use our own panel) */
+/* We use our own panel instead of Leaflet popups */
 .leaflet-popup {
   display: none;
 }

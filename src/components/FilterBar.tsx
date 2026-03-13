@@ -1,4 +1,5 @@
 import type { LocationType } from '../types';
+import { TYPE_EMOJIS } from '../constants';
 
 interface FilterOption {
   type: LocationType | null;
@@ -7,18 +8,18 @@ interface FilterOption {
 }
 
 const FILTERS: FilterOption[] = [
-  { type: null, label: 'All', emoji: '🗺️' },
-  { type: 'playground', label: 'Playgrounds', emoji: '🛝' },
-  { type: 'park', label: 'Parks', emoji: '🌳' },
-  { type: 'splash-pad', label: 'Splash Pads', emoji: '💦' },
-  { type: 'basketball-court', label: 'Basketball', emoji: '🏀' },
-  { type: 'tennis-court', label: 'Tennis', emoji: '🎾' },
-  { type: 'soccer-field', label: 'Soccer', emoji: '⚽' },
-  { type: 'skate-park', label: 'Skate Parks', emoji: '🛹' },
-  { type: 'rec-center', label: 'Rec Centers', emoji: '🏫' },
-  { type: 'open-field', label: 'Open Fields', emoji: '🌿' },
-  { type: 'multi-sport-court', label: 'Multi-Sport', emoji: '🏆' },
-  { type: 'pocket-park', label: 'Pocket Parks', emoji: '🌺' },
+  { type: null,                 label: 'All',         emoji: '🗺️' },
+  { type: 'playground',         label: 'Playgrounds',  emoji: TYPE_EMOJIS['playground'] },
+  { type: 'park',               label: 'Parks',        emoji: TYPE_EMOJIS['park'] },
+  { type: 'splash-pad',         label: 'Splash Pads',  emoji: TYPE_EMOJIS['splash-pad'] },
+  { type: 'basketball-court',   label: 'Basketball',   emoji: TYPE_EMOJIS['basketball-court'] },
+  { type: 'tennis-court',       label: 'Tennis',       emoji: TYPE_EMOJIS['tennis-court'] },
+  { type: 'soccer-field',       label: 'Soccer',       emoji: TYPE_EMOJIS['soccer-field'] },
+  { type: 'skate-park',         label: 'Skate Parks',  emoji: TYPE_EMOJIS['skate-park'] },
+  { type: 'rec-center',         label: 'Rec Centers',  emoji: TYPE_EMOJIS['rec-center'] },
+  { type: 'open-field',         label: 'Open Fields',  emoji: TYPE_EMOJIS['open-field'] },
+  { type: 'multi-sport-court',  label: 'Multi-Sport',  emoji: TYPE_EMOJIS['multi-sport-court'] },
+  { type: 'pocket-park',        label: 'Pocket Parks', emoji: TYPE_EMOJIS['pocket-park'] },
 ];
 
 interface Props {
@@ -31,18 +32,17 @@ export default function FilterBar({ activeFilter, onFilterChange, resultCount }:
   return (
     <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide py-1 px-1">
       {FILTERS.map((f) => {
-        const isActive =
-          f.type === activeFilter || (f.type === null && activeFilter === null);
+        const isActive = f.type === activeFilter || (f.type === null && activeFilter === null);
         return (
           <button
             key={f.label}
             onClick={() => onFilterChange(f.type)}
             className={`
-              flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold font-body
+              flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold font-heading
               whitespace-nowrap transition-all duration-200
               ${isActive
-                ? 'bg-emerald-600 text-white shadow-md scale-105 dark:bg-emerald-500'
-                : 'bg-white/90 dark:bg-slate-700/90 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-600 hover:bg-emerald-50 dark:hover:bg-slate-600'
+                ? 'bg-leafy-green text-white shadow-warm scale-105'
+                : 'bg-cloud-white/90 dark:bg-slate-700/90 text-earth-brown dark:text-slate-200 border-2 border-earth-brown/15 hover:border-leafy-green/40 hover:bg-leafy-green/10'
               }
             `}
           >

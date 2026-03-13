@@ -1,26 +1,15 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 import { MapContainer, TileLayer, Marker, ZoomControl, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { ArrowLeft, Heart, Loader2, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Heart, Loader2, AlertTriangle, Navigation } from 'lucide-react';
 import type { Location, LocationType } from '../types';
+import { TYPE_EMOJIS } from '../constants';
+import { haversineDistance, formatDistance } from '../utils/distanceCalculator';
+import { useUserLocation } from '../hooks/useUserLocation';
 import FilterBar from './FilterBar';
 import LocationDetailPanel from './LocationDetailPanel';
 import ThemeToggle from './ThemeToggle';
-
-const TYPE_EMOJIS: Record<string, string> = {
-  playground: '🛝',
-  park: '🌳',
-  'splash-pad': '💦',
-  'basketball-court': '🏀',
-  'tennis-court': '🎾',
-  'soccer-field': '⚽',
-  'skate-park': '🛹',
-  'rec-center': '🏫',
-  'multi-sport-court': '🏆',
-  'open-field': '🌿',
-  'pocket-park': '🌺',
-};
 
 const SHADE_HEX: Record<string, { bg: string; border: string }> = {
   'full-shade': { bg: '#10b981', border: '#059669' },
@@ -58,6 +47,21 @@ function createMarkerIcon(location: Location, selected: boolean): L.DivIcon {
     popupAnchor: [0, -(size / 2)],
   });
 }
+
+const USER_LOCATION_ICON = L.divIcon({
+  className: '',
+  html: `
+    <div style="
+      width:18px;height:18px;
+      background:#3b82f6;
+      border:3px solid white;
+      border-radius:50%;
+      box-shadow:0 0 0 4px rgba(59,130,246,0.3), 0 2px 8px rgba(0,0,0,0.3);
+    "></div>
+  `,
+  iconSize: [18, 18],
+  iconAnchor: [9, 9],
+});
 
 /** Fly to a location when selected */
 function MapFlyTo({ coordinates }: { coordinates: [number, number] | null }) {
@@ -118,12 +122,26 @@ export default function MapView({
   const [mapError, setMapError] = useState(false);
   const [mapLoading, setMapLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const { coords: userCoords, status: locationStatus, request: requestLocation } = useUserLocation();
 
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    const handleResize = () => {
+      const next = window.innerWidth < 768;
+      setIsMobile((prev) => (prev !== next ? next : prev));
+    };
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  // When Near Me is active, sort filtered locations by distance from user
+  const displayedLocations = useMemo(() => {
+    if (!userCoords) return filteredLocations;
+    return [...filteredLocations].sort(
+      (a, b) =>
+        haversineDistance(userCoords, a.coordinates) -
+        haversineDistance(userCoords, b.coordinates)
+    );
+  }, [filteredLocations, userCoords]);
 
   const tileUrl = isDark
     ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
@@ -131,20 +149,27 @@ export default function MapView({
 
   const tileAttribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>';
 
+  // Nearest spot distance label for the legend
+  const nearestLabel = useMemo(() => {
+    if (!userCoords || displayedLocations.length === 0) return null;
+    const d = haversineDistance(userCoords, displayedLocations[0].coordinates);
+    return `Nearest: ${formatDistance(d)}`;
+  }, [userCoords, displayedLocations]);
+
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-slate-100 dark:bg-slate-900">
+    <div className="flex h-[100dvh] w-screen overflow-hidden bg-cloud-white dark:bg-slate-900">
       {/* Main map area */}
       <div className="flex-1 relative flex flex-col overflow-hidden">
         {/* Top bar */}
         <div className="
           relative z-30 flex items-center gap-2 px-3 py-2
-          bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm
-          border-b border-slate-100 dark:border-slate-800
-          shadow-sm
+          bg-cloud-white/95 dark:bg-slate-900/95 backdrop-blur-sm
+          border-b-2 border-earth-brown/10 dark:border-slate-800
+          shadow-warm
         ">
           <button
             onClick={onBack}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-semibold font-body text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-bold font-heading text-earth-brown/70 dark:text-slate-300 hover:bg-earth-brown/10 dark:hover:bg-slate-800 transition-colors shrink-0"
           >
             <ArrowLeft size={15} />
             <span className="hidden sm:inline">Home</span>
@@ -153,7 +178,7 @@ export default function MapView({
           {/* Logo */}
           <div className="hidden md:flex items-center gap-1.5 shrink-0">
             <span className="text-lg">🌳</span>
-            <span className="font-heading font-bold text-emerald-700 dark:text-emerald-400 text-sm">
+            <span className="font-heading font-bold text-leafy-green text-sm">
               TreePatch
             </span>
           </div>
@@ -169,14 +194,41 @@ export default function MapView({
 
           {/* Actions */}
           <div className="flex items-center gap-2 shrink-0">
+            {/* Near Me button */}
+            <button
+              onClick={requestLocation}
+              disabled={locationStatus === 'loading'}
+              title={
+                locationStatus === 'error'
+                  ? 'Location unavailable'
+                  : locationStatus === 'success'
+                  ? 'Re-center on my location'
+                  : 'Find spots near me'
+              }
+              className={`
+                relative flex items-center justify-center w-10 h-10 rounded-full
+                border shadow-sm hover:shadow-md transition-all duration-200
+                ${locationStatus === 'success'
+                  ? 'bg-blue-500 border-blue-400 text-white hover:bg-blue-600'
+                  : locationStatus === 'error'
+                  ? 'bg-white/90 dark:bg-slate-700/90 border-rose-300 dark:border-rose-700 text-rose-400'
+                  : 'bg-white/90 dark:bg-slate-700/90 border-slate-200 dark:border-slate-600 text-slate-400 hover:text-blue-500 hover:scale-110'
+                }
+                ${locationStatus === 'loading' ? 'animate-pulse' : ''}
+              `}
+              aria-label="Near me"
+            >
+              <Navigation size={15} strokeWidth={2} className={locationStatus === 'success' ? '' : ''} />
+            </button>
+
             <button
               onClick={onShowFavorites}
-              className="relative flex items-center justify-center w-10 h-10 rounded-full bg-white/90 dark:bg-slate-700/90 border border-slate-200 dark:border-slate-600 shadow-sm hover:shadow-md transition-all duration-200 hover:scale-110"
+              className="relative flex items-center justify-center w-10 h-10 rounded-full bg-cloud-white/90 dark:bg-slate-700/90 border-2 border-earth-brown/15 shadow-warm hover:shadow-warm-lg transition-all duration-200 hover:scale-110"
               aria-label="Saved spots"
             >
-              <Heart size={16} className={favoriteIds.length > 0 ? 'fill-rose-500 text-rose-500' : 'text-slate-400'} />
+              <Heart size={16} className={favoriteIds.length > 0 ? 'fill-sunset-orange text-sunset-orange' : 'text-earth-brown/40'} />
               {favoriteIds.length > 0 && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-sunset-orange text-white text-[9px] font-bold rounded-full flex items-center justify-center">
                   {favoriteIds.length}
                 </span>
               )}
@@ -188,11 +240,11 @@ export default function MapView({
         {/* Map */}
         <div className="flex-1 relative">
           {mapLoading && !mapError && (
-            <div className="absolute inset-0 z-20 flex items-center justify-center bg-slate-100 dark:bg-slate-900">
+            <div className="absolute inset-0 z-20 flex items-center justify-center bg-cloud-white dark:bg-slate-900">
               <div className="flex flex-col items-center gap-3">
                 <div className="text-4xl animate-tree-sway">🌳</div>
-                <p className="font-body text-slate-500 dark:text-slate-400 text-sm">Loading the map…</p>
-                <Loader2 size={20} className="animate-spin text-emerald-500" />
+                <p className="font-body text-earth-brown/60 dark:text-slate-400 text-sm font-semibold">Loading the map…</p>
+                <Loader2 size={20} className="animate-spin text-leafy-green" />
               </div>
             </div>
           )}
@@ -212,8 +264,8 @@ export default function MapView({
             </div>
           ) : (
             <MapContainer
-              center={[39.9526, -75.1652]}
-              zoom={13}
+              center={[39.9928, -75.1526]}
+              zoom={12}
               className="w-full h-full"
               zoomControl={false}
               whenReady={() => setMapLoading(false)}
@@ -228,8 +280,9 @@ export default function MapView({
                 }}
               />
 
+              {/* Fly to selected spot or user location */}
               <MapFlyTo
-                coordinates={selectedLocation ? selectedLocation.coordinates : null}
+                coordinates={selectedLocation ? selectedLocation.coordinates : userCoords}
               />
 
               {/* Dismiss panel on empty map click */}
@@ -237,7 +290,12 @@ export default function MapView({
                 <MapClickDismiss onDismiss={onCloseDetail} />
               )}
 
-              {filteredLocations.map((loc) => (
+              {/* User location dot */}
+              {userCoords && (
+                <Marker position={userCoords} icon={USER_LOCATION_ICON} zIndexOffset={2000} />
+              )}
+
+              {displayedLocations.map((loc) => (
                 <Marker
                   key={loc.id}
                   position={loc.coordinates}
@@ -251,24 +309,48 @@ export default function MapView({
             </MapContainer>
           )}
 
-          {/* Floating shade legend */}
+          {/* Floating shade legend + spot count */}
           {!mapLoading && !mapError && (
             <div className="
               absolute bottom-4 left-3 z-20
-              bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm
-              rounded-2xl shadow-lg border border-slate-100 dark:border-slate-700
-              px-3 py-2 flex items-center gap-3 font-body
+              bg-cloud-white/95 dark:bg-slate-800/95 backdrop-blur-sm
+              rounded-2xl shadow-warm border-2 border-earth-brown/10 dark:border-slate-700
+              px-3 py-2 flex flex-col gap-2 font-body
             ">
-              {[
-                { color: 'bg-emerald-400', label: 'Full Shade' },
-                { color: 'bg-amber-300', label: 'Partial' },
-                { color: 'bg-orange-400', label: 'Sunny' },
-              ].map(({ color, label }) => (
-                <div key={label} className="flex items-center gap-1.5">
-                  <div className={`w-2.5 h-2.5 rounded-full ${color}`} />
-                  <span className="text-[11px] text-slate-500 dark:text-slate-400 font-semibold">{label}</span>
+              {/* Spot count + near me info */}
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-[11px] font-bold text-earth-brown dark:text-slate-300">
+                  {filteredLocations.length} spot{filteredLocations.length !== 1 ? 's' : ''} on map
+                </span>
+                {activeFilter && (
+                  <button
+                    onClick={() => onFilterChange(null)}
+                    className="text-[10px] font-bold text-leafy-green hover:underline"
+                  >
+                    Show all
+                  </button>
+                )}
+              </div>
+              {/* Nearest spot row */}
+              {nearestLabel && (
+                <div className="flex items-center gap-1.5">
+                  <Navigation size={10} className="text-sky-blue shrink-0" />
+                  <span className="text-[11px] text-sky-blue font-semibold">{nearestLabel}</span>
                 </div>
-              ))}
+              )}
+              {/* Legend */}
+              <div className="flex items-center gap-3">
+                {[
+                  { color: 'bg-leafy-green', label: 'Full Shade' },
+                  { color: 'bg-sunshine-yellow', label: 'Partial' },
+                  { color: 'bg-sunset-orange', label: 'Sunny' },
+                ].map(({ color, label }) => (
+                  <div key={label} className="flex items-center gap-1.5">
+                    <div className={`w-2.5 h-2.5 rounded-full ${color}`} />
+                    <span className="text-[11px] text-earth-brown/60 dark:text-slate-400 font-semibold">{label}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
@@ -282,7 +364,7 @@ export default function MapView({
             isFavorite={favoriteIds.includes(selectedLocation.id)}
             onToggleFavorite={onToggleFavorite}
             onClose={onCloseDetail}
-            onSelectLocation={(loc) => { onSelectLocation(loc); }}
+            onSelectLocation={onSelectLocation}
             isMobile={true}
           />
         )}
@@ -296,7 +378,7 @@ export default function MapView({
           isFavorite={favoriteIds.includes(selectedLocation.id)}
           onToggleFavorite={onToggleFavorite}
           onClose={onCloseDetail}
-          onSelectLocation={(loc) => { onSelectLocation(loc); }}
+          onSelectLocation={onSelectLocation}
           isMobile={false}
         />
       )}
