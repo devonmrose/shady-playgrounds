@@ -136,10 +136,10 @@ export default function LocationDetailPanel({
         {/* Close button overlaid top-right */}
         <button
           onClick={(e) => { e.stopPropagation(); onClose(); }}
-          className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full bg-cloud-white/90 dark:bg-slate-800/90 backdrop-blur-sm text-earth-brown/70 shadow-warm border border-earth-brown/10 hover:bg-cloud-white transition-colors"
+          className="absolute top-3 right-3 w-10 h-10 flex items-center justify-center rounded-full bg-cloud-white dark:bg-slate-700 text-earth-brown dark:text-slate-200 shadow-warm-lg border-2 border-earth-brown/20 dark:border-slate-600 hover:bg-earth-brown/10 dark:hover:bg-slate-600 transition-colors"
           aria-label="Close"
         >
-          {isMobile ? <ChevronDown size={16} /> : <X size={16} />}
+          {isMobile ? <ChevronDown size={18} strokeWidth={2.5} /> : <X size={16} strokeWidth={2.5} />}
         </button>
       </div>
 
@@ -245,6 +245,9 @@ export default function LocationDetailPanel({
         style={{
           boxShadow: '0 -4px 32px rgba(141,110,99,0.22)',
           maxHeight: '82svh',
+          // Force GPU compositing so iOS Safari respects overflow:hidden + border-radius on iframes
+          transform: 'translateZ(0)',
+          WebkitTransform: 'translateZ(0)',
         }}
       >
         {content}
