@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, useMemo } from 'react';
 import { MapContainer, TileLayer, Marker, ZoomControl, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { ArrowLeft, Heart, Loader2, AlertTriangle, Navigation } from 'lucide-react';
+import { ArrowLeft, Heart, Loader2, Navigation } from 'lucide-react';
 import type { Location } from '../types';
 import type { FilterType } from '../hooks/useFilters';
 import { TYPE_EMOJIS } from '../constants';
@@ -120,7 +120,6 @@ export default function MapView({
   onToggleTheme,
   onShowFavorites,
 }: Props) {
-  const [mapError, setMapError] = useState(false);
   const [mapLoading, setMapLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const { coords: userCoords, status: locationStatus, request: requestLocation } = useUserLocation();
@@ -240,7 +239,7 @@ export default function MapView({
 
         {/* Map */}
         <div className="flex-1 relative">
-          {mapLoading && !mapError && (
+          {mapLoading && (
             <div className="absolute inset-0 z-20 flex items-center justify-center bg-cloud-white dark:bg-slate-900">
               <div className="flex flex-col items-center gap-3">
                 <div className="text-4xl animate-tree-sway">🌳</div>
@@ -250,21 +249,7 @@ export default function MapView({
             </div>
           )}
 
-          {mapError ? (
-            <div className="absolute inset-0 z-20 flex items-center justify-center bg-emerald-50 dark:bg-slate-900">
-              <div className="text-center p-8 max-w-sm">
-                <div className="text-6xl mb-4">🌳</div>
-                <div className="flex items-center justify-center gap-2 text-amber-600 dark:text-amber-400 mb-2">
-                  <AlertTriangle size={18} />
-                  <span className="font-heading font-semibold text-lg">Oops!</span>
-                </div>
-                <p className="font-body text-slate-600 dark:text-slate-300">
-                  The trees are being mysterious today. Map couldn't load — but here are all the spots!
-                </p>
-              </div>
-            </div>
-          ) : (
-            <MapContainer
+          <MapContainer
               center={[39.9928, -75.1526]}
               zoom={12}
               className="w-full h-full"
@@ -276,9 +261,6 @@ export default function MapView({
                 url={tileUrl}
                 attribution={tileAttribution}
                 errorTileUrl="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
-                eventHandlers={{
-                  tileerror: () => setMapError(true),
-                }}
               />
 
               {/* Fly to selected spot or user location */}
@@ -308,10 +290,9 @@ export default function MapView({
                 />
               ))}
             </MapContainer>
-          )}
 
           {/* Floating shade legend + spot count */}
-          {!mapLoading && !mapError && (
+          {!mapLoading && (
             <div className="
               absolute bottom-4 left-3 z-20
               bg-cloud-white/95 dark:bg-slate-800/95 backdrop-blur-sm
