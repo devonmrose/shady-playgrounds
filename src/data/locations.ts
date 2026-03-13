@@ -6,6 +6,7 @@ interface RawLocation {
   id: string;
   name: string;
   type: LocationType;
+  secondaryTypes?: LocationType[];
   coordinates: [number, number];
   description: string;
   tags: string[];
@@ -2402,10 +2403,11 @@ const rawLocations: RawLocation[] = [
     id: "fishtown-recreation-center",
     name: "Fishtown Recreation Center",
     type: "rec-center",
+    secondaryTypes: ["playground", "basketball-court", "splash-pad"],
     coordinates: [39.97173, -75.12816],
-    description: "Community recreation center with a playground and outdoor green space in the heart of Fishtown.",
-    tags: ["Rec Center", "Playground", "Community", "Outdoor Court"],
-    canopyEstimate: 35,
+    description: "Major PPR rec center in Fishtown with a fenced playground, outdoor basketball courts, spray pad, and mature trees along the perimeter for afternoon shade.",
+    tags: ["Rec Center", "Playground", "Basketball", "Spray Pad", "Fenced", "PPR", "Fishtown", "Afternoon Shade"],
+    canopyEstimate: 40,
     neighborhood: "Fishtown",
     address: "1202 E Montgomery Ave",
   },
@@ -2716,9 +2718,10 @@ const rawLocations: RawLocation[] = [
     id: "shissler-recreation-center",
     name: "Shissler Recreation Center",
     type: "rec-center",
+    secondaryTypes: ["playground", "basketball-court"],
     coordinates: [39.9773, -75.1238],
-    description: "Popular Fishtown neighborhood rec center on Blair Street with a fenced playground, basketball courts, and a spray park. One of the most-used PPR facilities in the area.",
-    tags: ["Playground", "Basketball", "Spray Park", "Fenced", "PPR", "Fishtown"],
+    description: "Well-loved PPR rec center on Blair Street in Fishtown with a fenced outdoor playground and basketball courts. One of the most-used facilities in the neighborhood.",
+    tags: ["Playground", "Basketball", "Fenced", "PPR", "Fishtown", "Blair Street"],
     canopyEstimate: 40,
     neighborhood: "Fishtown",
     address: "1800 E Blair St",

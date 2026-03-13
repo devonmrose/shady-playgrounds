@@ -32,6 +32,8 @@ export interface Location {
   id: string;
   name: string;
   type: LocationType;
+  /** Additional outdoor amenity types — used so multi-use facilities appear in multiple filters */
+  secondaryTypes?: LocationType[];
   coordinates: [number, number]; // [lat, lng]
   shadeScore: ShadeLevel;
   description: string;
