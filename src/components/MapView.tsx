@@ -352,7 +352,7 @@ export default function MapView({
             onSelectLocation={onSelectLocation}
             isMobile={true}
           />,
-          document.getElementById('portal-root')!
+          document.getElementById('portal-root') ?? document.body
         )}
 
       {/* Desktop: right panel */}

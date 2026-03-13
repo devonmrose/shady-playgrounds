@@ -235,7 +235,7 @@ export default function LocationDetailPanel({
     return (
       <div
         className="
-          fixed bottom-0 left-0 right-0 z-40
+          fixed bottom-0 left-0 right-0
           bg-cloud-white dark:bg-slate-800
           rounded-t-3xl
           animate-slide-up
@@ -243,6 +243,7 @@ export default function LocationDetailPanel({
           overflow-hidden
         "
         style={{
+          zIndex: 9999,
           boxShadow: '0 -4px 32px rgba(141,110,99,0.22)',
           maxHeight: '82svh',
           // Force GPU compositing so iOS Safari respects overflow:hidden + border-radius on iframes
