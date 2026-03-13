@@ -6,6 +6,7 @@ import SunProfileTimeline from './SunProfileTimeline';
 import NearbyLocations from './NearbyLocations';
 import ShareButton from './ShareButton';
 import { useWeather } from '../hooks/useWeather';
+import { usePlacePhoto } from '../hooks/usePlacePhoto';
 
 interface Props {
   location: Location;
@@ -27,17 +28,27 @@ function osmEmbedUrl(lat: number, lng: number) {
 function LocationHero({ location }: { location: Location }) {
   const emoji = TYPE_EMOJIS[location.type] ?? '📍';
   const [lat, lng] = location.coordinates;
+  const { photoUrl, ready } = usePlacePhoto(location.name, lat, lng);
 
   return (
     <div className="relative w-full overflow-hidden" style={{ height: '180px' }}>
-      <iframe
-        key={location.id}
-        src={osmEmbedUrl(lat, lng)}
-        title={`Map of ${location.name}`}
-        style={{ border: 'none', width: '100%', height: '100%', display: 'block' }}
-        loading="lazy"
-        scrolling="no"
-      />
+      {/* Show Google user photo once ready; fall back to OSM map embed */}
+      {ready && photoUrl ? (
+        <img
+          src={photoUrl}
+          alt={location.name}
+          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+        />
+      ) : (
+        <iframe
+          key={location.id}
+          src={osmEmbedUrl(lat, lng)}
+          title={`Map of ${location.name}`}
+          style={{ border: 'none', width: '100%', height: '100%', display: 'block' }}
+          loading="lazy"
+          scrolling="no"
+        />
+      )}
       {/* Gradient fade at bottom */}
       <div className="absolute inset-x-0 bottom-0 h-10 pointer-events-none"
         style={{ background: 'linear-gradient(to top, #FAFAF8, transparent)' }} />
