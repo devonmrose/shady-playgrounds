@@ -1,6 +1,7 @@
+import { useState } from 'react';
 import { Heart, X, MapPin, ChevronDown } from 'lucide-react';
 import type { Location } from '../types';
-import { TYPE_LABELS } from '../constants';
+import { TYPE_LABELS, TYPE_EMOJIS } from '../constants';
 import { SHADE_LABELS } from '../utils/shadeCalculator';
 import SunProfileTimeline from './SunProfileTimeline';
 import NearbyLocations from './NearbyLocations';
@@ -15,6 +16,59 @@ interface Props {
   onClose: () => void;
   onSelectLocation: (loc: Location) => void;
   isMobile: boolean;
+}
+
+/** Wikimedia static map tile — shows real OSM map of the exact location, no API key needed */
+function locationMapUrl(lat: number, lng: number, w = 800, h = 340) {
+  return `https://maps.wikimedia.org/img/osm-intl,17,${lng},${lat},${w}x${h}.png`;
+}
+
+function LocationImage({ location }: { location: Location }) {
+  const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState(false);
+  const emoji = TYPE_EMOJIS[location.type] ?? '📍';
+
+  return (
+    <div className="relative w-full overflow-hidden" style={{ height: '170px' }}>
+      {/* Skeleton while loading */}
+      {!loaded && !error && (
+        <div className="absolute inset-0 bg-leafy-green/10 animate-pulse flex items-center justify-center">
+          <span className="text-4xl opacity-30">{emoji}</span>
+        </div>
+      )}
+
+      {/* Fallback if map image fails */}
+      {error && (
+        <div className="absolute inset-0 bg-leafy-green/10 flex flex-col items-center justify-center gap-2">
+          <span className="text-4xl">{emoji}</span>
+          <span className="text-xs font-semibold text-earth-brown/40 font-body">{location.neighborhood}</span>
+        </div>
+      )}
+
+      {/* Map image */}
+      {!error && (
+        <img
+          src={locationMapUrl(location.coordinates[0], location.coordinates[1])}
+          alt={`Map of ${location.name}`}
+          onLoad={() => setLoaded(true)}
+          onError={() => setError(true)}
+          className={`w-full h-full object-cover transition-opacity duration-300 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+          loading="lazy"
+        />
+      )}
+
+      {/* Bottom gradient fade */}
+      <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-cloud-white dark:from-slate-800 to-transparent" />
+
+      {/* Type badge bottom-left */}
+      <div className="absolute bottom-3 left-4 flex items-center gap-1.5 bg-cloud-white/90 dark:bg-slate-800/90 backdrop-blur-sm px-2.5 py-1 rounded-full border border-earth-brown/10 shadow-warm">
+        <span className="text-sm">{emoji}</span>
+        <span className="text-xs font-bold font-heading text-earth-brown dark:text-slate-200">
+          {TYPE_LABELS[location.type] ?? location.type}
+        </span>
+      </div>
+    </div>
+  );
 }
 
 function WeatherStrip({ lat, lng }: { lat: number; lng: number }) {
@@ -48,13 +102,7 @@ function WeatherStrip({ lat, lng }: { lat: number; lng: number }) {
             </p>
           </div>
         </div>
-        <span
-          className={`text-xs font-bold px-3 py-1.5 rounded-full ${
-            weather.isGoodForPlay
-              ? 'bg-leafy-green/20 text-leafy-green'
-              : 'bg-sunset-orange/20 text-sunset-orange'
-          }`}
-        >
+        <span className={`text-xs font-bold px-3 py-1.5 rounded-full ${weather.isGoodForPlay ? 'bg-leafy-green/20 text-leafy-green' : 'bg-sunset-orange/20 text-sunset-orange'}`}>
           {weather.isGoodForPlay ? '✓ Great day to play!' : 'Check conditions'}
         </span>
       </div>
@@ -64,9 +112,9 @@ function WeatherStrip({ lat, lng }: { lat: number; lng: number }) {
 
 function shadeChipColors(score: string) {
   switch (score) {
-    case 'full-shade':   return 'bg-leafy-green/20 text-leafy-green border-leafy-green/30';
+    case 'full-shade':    return 'bg-leafy-green/20 text-leafy-green border-leafy-green/30';
     case 'partial-shade': return 'bg-sunshine-yellow/25 text-earth-brown border-sunshine-yellow/40';
-    case 'mostly-sunny': return 'bg-sunset-orange/20 text-sunset-orange border-sunset-orange/30';
+    case 'mostly-sunny':  return 'bg-sunset-orange/20 text-sunset-orange border-sunset-orange/30';
     default: return 'bg-slate-100 text-slate-600 border-slate-200';
   }
 }
@@ -81,50 +129,53 @@ export default function LocationDetailPanel({
   isMobile,
 }: Props) {
   const content = (
-    <div className="flex flex-col h-full font-body">
+    <div className="flex flex-col h-full font-body overflow-hidden">
       {/* Drag handle (mobile only) */}
       {isMobile && (
-        <div className="flex justify-center pt-3 pb-1">
+        <div className="flex justify-center pt-3 pb-1 shrink-0">
           <div className="w-10 h-1 bg-earth-brown/20 rounded-full" />
         </div>
       )}
 
-      {/* Header */}
-      <div className="flex items-start justify-between gap-3 px-5 pt-4 pb-3">
-        <div className="flex items-start gap-3 min-w-0">
-          <div className="min-w-0">
-            <h2 className="font-heading font-bold text-xl text-earth-brown dark:text-slate-100 leading-tight">
-              {location.name}
-            </h2>
-            <div className="flex flex-wrap items-center gap-2 mt-1.5">
-              <span className="text-xs font-bold bg-sky-blue/15 text-sky-blue px-2.5 py-0.5 rounded-full border border-sky-blue/20">
-                {TYPE_LABELS[location.type] ?? location.type}
-              </span>
-              <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full border ${shadeChipColors(location.shadeScore)}`}>
-                {SHADE_LABELS[location.shadeScore]}
-              </span>
-            </div>
-          </div>
-        </div>
+      {/* Map image header */}
+      <div className="shrink-0 relative">
+        <LocationImage location={location} />
+        {/* Close button overlaid top-right */}
         <button
           onClick={onClose}
-          className="shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-earth-brown/10 text-earth-brown/60 hover:bg-earth-brown/20 transition-colors"
+          className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full bg-cloud-white/90 dark:bg-slate-800/90 backdrop-blur-sm text-earth-brown/70 shadow-warm border border-earth-brown/10 hover:bg-cloud-white transition-colors"
           aria-label="Close"
         >
           {isMobile ? <ChevronDown size={16} /> : <X size={16} />}
         </button>
       </div>
 
-      {/* Scrollable content */}
-      <div className="flex-1 overflow-y-auto px-5 pb-6 space-y-4">
-        {/* Neighborhood */}
-        {(location.neighborhood || location.address) && (
-          <div className="flex items-center gap-1.5 text-sm text-earth-brown/60 dark:text-slate-400">
-            <MapPin size={13} className="shrink-0" />
-            <span>{location.address ?? location.neighborhood}</span>
-          </div>
-        )}
+      {/* Name + shade chip */}
+      <div className="px-5 pt-1 pb-3 shrink-0">
+        <h2 className="font-heading font-bold text-xl text-earth-brown dark:text-slate-100 leading-tight">
+          {location.name}
+        </h2>
+        <div className="flex flex-wrap items-center gap-2 mt-1.5">
+          <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full border ${shadeChipColors(location.shadeScore)}`}>
+            {SHADE_LABELS[location.shadeScore]}
+          </span>
+          {location.neighborhood && (
+            <span className="flex items-center gap-1 text-xs text-earth-brown/50 font-semibold">
+              <MapPin size={11} />
+              {location.address ?? location.neighborhood}
+            </span>
+          )}
+        </div>
+      </div>
 
+      {/* Scrollable content — iOS needs -webkit-overflow-scrolling */}
+      <div
+        className="flex-1 overflow-y-auto px-5 space-y-4"
+        style={{
+          WebkitOverflowScrolling: 'touch',
+          paddingBottom: 'calc(1.5rem + env(safe-area-inset-bottom, 16px))',
+        }}
+      >
         {/* Description */}
         <p className="text-sm text-earth-brown/80 dark:text-slate-300 leading-relaxed font-medium">
           {location.description}
@@ -134,10 +185,7 @@ export default function LocationDetailPanel({
         {location.tags.length > 0 && (
           <div className="flex flex-wrap gap-1.5">
             {location.tags.map((tag) => (
-              <span
-                key={tag}
-                className="text-[11px] font-bold bg-leafy-green/10 text-leafy-green px-2 py-0.5 rounded-full border border-leafy-green/20"
-              >
+              <span key={tag} className="text-[11px] font-bold bg-leafy-green/10 text-leafy-green px-2 py-0.5 rounded-full border border-leafy-green/20">
                 {tag}
               </span>
             ))}
@@ -155,12 +203,12 @@ export default function LocationDetailPanel({
           <SunProfileTimeline sunProfile={location.sunProfile} />
         </div>
 
-        {/* Actions */}
+        {/* Actions — Save + Share */}
         <div className="flex items-center gap-3">
           <button
             onClick={() => onToggleFavorite(location.id)}
             className={`
-              flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold font-heading
+              flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold font-heading
               transition-all duration-200
               ${isFavorite
                 ? 'bg-sunset-orange/20 text-sunset-orange border-2 border-sunset-orange/30'
@@ -169,11 +217,7 @@ export default function LocationDetailPanel({
             `}
             aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
           >
-            <Heart
-              size={15}
-              strokeWidth={2}
-              className={isFavorite ? 'fill-sunset-orange text-sunset-orange' : ''}
-            />
+            <Heart size={15} strokeWidth={2} className={isFavorite ? 'fill-sunset-orange text-sunset-orange' : ''} />
             {isFavorite ? 'Saved' : 'Save'}
           </button>
           <ShareButton location={location} />
@@ -200,13 +244,14 @@ export default function LocationDetailPanel({
         className="
           fixed bottom-0 left-0 right-0 z-40
           bg-cloud-white dark:bg-slate-800
-          rounded-t-3xl shadow-warm-lg
+          rounded-t-3xl
           animate-slide-up
-          max-h-[75vh] flex flex-col
+          flex flex-col
+          overflow-hidden
         "
         style={{
-          boxShadow: '0 -4px 32px rgba(141,110,99,0.18)',
-          paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+          boxShadow: '0 -4px 32px rgba(141,110,99,0.22)',
+          maxHeight: '82svh',
         }}
       >
         {content}

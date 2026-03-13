@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import type { Location, LocationType } from './types';
+import type { Location } from './types';
+import type { FilterType } from './hooks/useFilters';
 import { locations, getLocationById } from './data/locations';
 import { useFavorites } from './hooks/useFavorites';
 import { useTheme } from './hooks/useTheme';
@@ -43,7 +44,7 @@ export default function App() {
     }
   }, []);
 
-  const handleSelectCategory = useCallback((type: LocationType | null) => {
+  const handleSelectCategory = useCallback((type: FilterType) => {
     setFilter(type);
     setView('map');
   }, [setFilter]);

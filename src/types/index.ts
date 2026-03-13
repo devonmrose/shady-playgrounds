@@ -12,7 +12,8 @@ export type LocationType =
   | 'rec-center'
   | 'multi-sport-court'
   | 'open-field'
-  | 'pocket-park';
+  | 'pocket-park'
+  | 'baseball-diamond';
 
 export interface HourlyShade {
   hour: number; // 0–23

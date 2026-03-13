@@ -1,30 +1,30 @@
-import type { LocationType } from '../types';
+import type { FilterType } from '../hooks/useFilters';
 import { TYPE_EMOJIS } from '../constants';
 
 interface FilterOption {
-  type: LocationType | null;
+  type: FilterType;
   label: string;
   emoji: string;
 }
 
 const FILTERS: FilterOption[] = [
-  { type: null,                 label: 'All',         emoji: '🗺️' },
-  { type: 'playground',         label: 'Playgrounds',  emoji: TYPE_EMOJIS['playground'] },
-  { type: 'park',               label: 'Parks',        emoji: TYPE_EMOJIS['park'] },
-  { type: 'splash-pad',         label: 'Splash Pads',  emoji: TYPE_EMOJIS['splash-pad'] },
-  { type: 'basketball-court',   label: 'Basketball',   emoji: TYPE_EMOJIS['basketball-court'] },
-  { type: 'tennis-court',       label: 'Tennis',       emoji: TYPE_EMOJIS['tennis-court'] },
-  { type: 'soccer-field',       label: 'Soccer',       emoji: TYPE_EMOJIS['soccer-field'] },
-  { type: 'skate-park',         label: 'Skate Parks',  emoji: TYPE_EMOJIS['skate-park'] },
-  { type: 'rec-center',         label: 'Rec Centers',  emoji: TYPE_EMOJIS['rec-center'] },
-  { type: 'open-field',         label: 'Open Fields',  emoji: TYPE_EMOJIS['open-field'] },
-  { type: 'multi-sport-court',  label: 'Multi-Sport',  emoji: TYPE_EMOJIS['multi-sport-court'] },
-  { type: 'pocket-park',        label: 'Pocket Parks', emoji: TYPE_EMOJIS['pocket-park'] },
+  { type: null,                label: 'All',          emoji: '🗺️' },
+  { type: 'playground',        label: 'Playgrounds',  emoji: TYPE_EMOJIS['playground'] },
+  { type: 'park',              label: 'Parks',        emoji: TYPE_EMOJIS['park'] },
+  { type: 'splash-pad',        label: 'Splash Pads',  emoji: TYPE_EMOJIS['splash-pad'] },
+  { type: 'basketball-court',  label: 'Basketball',   emoji: TYPE_EMOJIS['basketball-court'] },
+  { type: 'tennis-court',      label: 'Tennis',       emoji: TYPE_EMOJIS['tennis-court'] },
+  { type: 'fields',            label: 'Fields',       emoji: '⚽' },
+  { type: 'baseball-diamond',  label: 'Baseball',     emoji: TYPE_EMOJIS['baseball-diamond'] },
+  { type: 'skate-park',        label: 'Skate Parks',  emoji: TYPE_EMOJIS['skate-park'] },
+  { type: 'rec-center',        label: 'Rec Centers',  emoji: TYPE_EMOJIS['rec-center'] },
+  { type: 'multi-sport-court', label: 'Multi-Sport',  emoji: TYPE_EMOJIS['multi-sport-court'] },
+  { type: 'pocket-park',       label: 'Pocket Parks', emoji: TYPE_EMOJIS['pocket-park'] },
 ];
 
 interface Props {
-  activeFilter: LocationType | null;
-  onFilterChange: (type: LocationType | null) => void;
+  activeFilter: FilterType;
+  onFilterChange: (type: FilterType) => void;
   resultCount?: number;
 }
 

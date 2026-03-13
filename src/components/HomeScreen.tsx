@@ -1,23 +1,26 @@
 import { motion, type Variants } from 'framer-motion';
-import type { LocationType, CategoryInfo } from '../types';
+import type { CategoryInfo } from '../types';
+import type { FilterType } from '../hooks/useFilters';
 import { TYPE_EMOJIS } from '../constants';
 import CloudBackground from './CloudBackground';
 import WeatherIcon from './WeatherIcon';
 import ThemeToggle from './ThemeToggle';
 
-const CATEGORIES: (CategoryInfo & { color: string; blob: number })[] = [
-  { type: 'playground',         label: 'Playgrounds',   emoji: TYPE_EMOJIS['playground'],         description: 'Swings, slides & climbing',     color: 'bg-leafy-green/20',       blob: 1 },
-  { type: 'park',               label: 'Parks',          emoji: TYPE_EMOJIS['park'],               description: 'Shaded green spaces',           color: 'bg-breezy-teal/20',       blob: 2 },
-  { type: 'splash-pad',         label: 'Splash Pads',    emoji: TYPE_EMOJIS['splash-pad'],         description: 'Water jets & spray grounds',    color: 'bg-sky-blue/20',          blob: 3 },
-  { type: 'basketball-court',   label: 'Basketball',     emoji: TYPE_EMOJIS['basketball-court'],   description: 'Outdoor hoops',                 color: 'bg-sunset-orange/20',     blob: 4 },
-  { type: 'tennis-court',       label: 'Tennis',         emoji: TYPE_EMOJIS['tennis-court'],       description: 'Public courts',                 color: 'bg-sunshine-yellow/30',   blob: 1 },
-  { type: 'soccer-field',       label: 'Soccer Fields',  emoji: TYPE_EMOJIS['soccer-field'],       description: 'Open grass for pickup',         color: 'bg-leafy-green/30',       blob: 2 },
-  { type: 'skate-park',         label: 'Skate Parks',    emoji: TYPE_EMOJIS['skate-park'],         description: 'Ramps & smooth surfaces',       color: 'bg-earth-brown/10',       blob: 3 },
-  { type: 'rec-center',         label: 'Rec Centers',    emoji: TYPE_EMOJIS['rec-center'],         description: 'Community outdoor spaces',      color: 'bg-breezy-teal/15',       blob: 4 },
-  { type: 'open-field',         label: 'Open Fields',    emoji: TYPE_EMOJIS['open-field'],         description: 'Wide open grassy spaces',       color: 'bg-sunshine-yellow/20',   blob: 1 },
-  { type: 'multi-sport-court',  label: 'Multi-Sport',    emoji: TYPE_EMOJIS['multi-sport-court'],  description: 'Courts for many activities',    color: 'bg-sunset-orange/15',     blob: 2 },
-  { type: 'pocket-park',        label: 'Pocket Parks',   emoji: TYPE_EMOJIS['pocket-park'],        description: 'Hidden neighborhood gems',      color: 'bg-leafy-green/15',       blob: 3 },
-  { type: null,                 label: 'View All',        emoji: '🗺️',                              description: 'Every shady spot in Philly',    color: 'bg-sunshine-yellow/40',   blob: 4 },
+type CategoryEntry = Omit<CategoryInfo, 'type'> & { type: FilterType; color: string; blob: number };
+
+const CATEGORIES: CategoryEntry[] = [
+  { type: 'playground',        label: 'Playgrounds',      emoji: TYPE_EMOJIS['playground'],        description: 'Swings, slides & climbing',   color: 'bg-leafy-green/20',     blob: 1 },
+  { type: 'park',              label: 'Parks',             emoji: TYPE_EMOJIS['park'],              description: 'Shaded green spaces',         color: 'bg-breezy-teal/20',     blob: 2 },
+  { type: 'splash-pad',        label: 'Splash Pads',       emoji: TYPE_EMOJIS['splash-pad'],        description: 'Water jets & spray grounds',  color: 'bg-sky-blue/20',        blob: 3 },
+  { type: 'basketball-court',  label: 'Basketball',        emoji: TYPE_EMOJIS['basketball-court'],  description: 'Outdoor hoops',               color: 'bg-sunset-orange/20',   blob: 4 },
+  { type: 'tennis-court',      label: 'Tennis',            emoji: TYPE_EMOJIS['tennis-court'],      description: 'Public courts',               color: 'bg-sunshine-yellow/30', blob: 1 },
+  { type: 'fields',            label: 'Fields',            emoji: '⚽',                             description: 'Soccer & open grass spaces',  color: 'bg-leafy-green/30',     blob: 2 },
+  { type: 'baseball-diamond',  label: 'Baseball',          emoji: TYPE_EMOJIS['baseball-diamond'],  description: 'Diamonds & batting cages',    color: 'bg-sunset-orange/15',   blob: 3 },
+  { type: 'skate-park',        label: 'Skate Parks',       emoji: TYPE_EMOJIS['skate-park'],        description: 'Ramps & smooth surfaces',     color: 'bg-earth-brown/10',     blob: 4 },
+  { type: 'rec-center',        label: 'Rec Centers',       emoji: TYPE_EMOJIS['rec-center'],        description: 'Community outdoor spaces',    color: 'bg-breezy-teal/15',     blob: 1 },
+  { type: 'multi-sport-court', label: 'Multi-Sport',       emoji: TYPE_EMOJIS['multi-sport-court'], description: 'Courts for many activities',  color: 'bg-sunshine-yellow/20', blob: 2 },
+  { type: 'pocket-park',       label: 'Pocket Parks',      emoji: TYPE_EMOJIS['pocket-park'],       description: 'Hidden neighborhood gems',    color: 'bg-leafy-green/15',     blob: 3 },
+  { type: null,                label: 'View All',           emoji: '🗺️',                            description: 'Every shady spot in Philly',  color: 'bg-sunshine-yellow/40', blob: 4 },
 ];
 
 const BLOB_CLASSES: Record<number, string> = {
@@ -38,7 +41,7 @@ const itemVariants: Variants = {
 };
 
 interface Props {
-  onSelectCategory: (type: LocationType | null) => void;
+  onSelectCategory: (type: FilterType) => void;
   isDark: boolean;
   onToggleTheme: () => void;
 }
@@ -148,10 +151,10 @@ export default function HomeScreen({ onSelectCategory, isDark, onToggleTheme }: 
 
       {/* Bottom wave decoration */}
       <div className="fixed bottom-0 left-0 w-full h-28 pointer-events-none z-0 overflow-hidden">
-        <svg viewBox="0 0 1200 120" preserveAspectRatio="none" className="absolute bottom-0 w-full h-full fill-leafy-green/15">
+        <svg viewBox="0 0 1200 120" preserveAspectRatio="none" className="absolute bottom-0 w-full h-full fill-leafy-green/60">
           <path d="M0,120 C150,100 350,0 600,60 C850,120 1050,40 1200,80 L1200,120 L0,120 Z" />
         </svg>
-        <svg viewBox="0 0 1200 120" preserveAspectRatio="none" className="absolute bottom-0 w-full h-20 fill-leafy-green/20">
+        <svg viewBox="0 0 1200 120" preserveAspectRatio="none" className="absolute bottom-0 w-full h-20 fill-leafy-green/80">
           <path d="M0,120 C200,80 400,120 600,40 C800,-40 1000,80 1200,60 L1200,120 L0,120 Z" />
         </svg>
       </div>
