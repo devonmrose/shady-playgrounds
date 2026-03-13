@@ -243,17 +243,6 @@ const rawLocations: RawLocation[] = [
     neighborhood: "Fishtown",
     address: "Memphis & Sergeant St",
   },
-  {
-    id: "canal-st-courts",
-    name: "Canal Street Sport Courts",
-    type: "multi-sport-court",
-    coordinates: [39.9738, -75.1284],
-    description:
-      "Multi-use courts in Fishtown with basketball hoops and tennis lines. Urban location with minimal overhead shade — bring a hat.",
-    tags: ["Multi-Sport", "Basketball", "Tennis", "Urban Court", "Port Richmond"],
-    canopyEstimate: 10,
-    neighborhood: "Fishtown / Port Richmond",
-  },
 
   // ── NORTHERN LIBERTIES ─────────────────────────────────────────────────────
   {
@@ -1588,12 +1577,12 @@ const rawLocations: RawLocation[] = [
     id: "shissler-rec",
     name: "Shissler Recreation Center",
     type: "rec-center",
-    coordinates: [39.9768, -75.1224],
+    coordinates: [39.9775, -75.1326],
     description: "Fishtown's community rec center with outdoor courts, spray pad, and a fenced playground. Mature trees along the perimeter offer afternoon shade.",
     tags: ["Courts", "Spray Pad", "Playground", "Fishtown", "Afternoon Shade"],
     canopyEstimate: 38,
     neighborhood: "Fishtown",
-    address: "412 E Thompson St",
+    address: "1800 Blair St",
   },
   {
     id: "american-street-park",
