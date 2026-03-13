@@ -147,6 +147,15 @@ export default function HomeScreen({ onSelectCategory, isDark, onToggleTheme }: 
         <p className="text-center text-xs text-earth-brown/40 mt-8 italic font-semibold">
           Shade ratings updated daily · Philadelphia, PA
         </p>
+        <p className="text-center text-xs text-earth-brown/35 mt-2 font-semibold">
+          Made by Devon ·{' '}
+          <a
+            href="mailto:devonmrose@gmail.com"
+            className="underline underline-offset-2 hover:text-earth-brown/60 transition-colors"
+          >
+            Send feedback
+          </a>
+        </p>
       </main>
 
       {/* Bottom wave decoration */}
