@@ -12,6 +12,7 @@ export const TYPE_EMOJIS: Record<LocationType, string> = {
   'multi-sport-court': '🏆',
   'open-field': '🌿',
   'pocket-park': '🌺',
+  'baseball-diamond': '⚾',
 };
 
 export const TYPE_LABELS: Record<LocationType, string> = {
@@ -26,4 +27,5 @@ export const TYPE_LABELS: Record<LocationType, string> = {
   'multi-sport-court': 'Multi-Sport Court',
   'open-field': 'Open Field',
   'pocket-park': 'Pocket Park',
+  'baseball-diamond': 'Baseball Diamond',
 };

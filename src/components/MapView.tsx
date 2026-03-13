@@ -3,7 +3,8 @@ import { MapContainer, TileLayer, Marker, ZoomControl, useMap, useMapEvents } fr
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { ArrowLeft, Heart, Loader2, AlertTriangle, Navigation } from 'lucide-react';
-import type { Location, LocationType } from '../types';
+import type { Location } from '../types';
+import type { FilterType } from '../hooks/useFilters';
 import { TYPE_EMOJIS } from '../constants';
 import { haversineDistance, formatDistance } from '../utils/distanceCalculator';
 import { useUserLocation } from '../hooks/useUserLocation';
@@ -91,14 +92,14 @@ function MapClickDismiss({ onDismiss }: { onDismiss: () => void }) {
 interface Props {
   locations: Location[];
   filteredLocations: Location[];
-  activeFilter: LocationType | null;
+  activeFilter: FilterType;
   selectedLocation: Location | null;
   favoriteIds: string[];
   isDark: boolean;
   onBack: () => void;
   onSelectLocation: (loc: Location) => void;
   onCloseDetail: () => void;
-  onFilterChange: (type: LocationType | null) => void;
+  onFilterChange: (type: FilterType) => void;
   onToggleFavorite: (id: string) => void;
   onToggleTheme: () => void;
   onShowFavorites: () => void;
