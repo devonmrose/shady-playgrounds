@@ -17,45 +17,38 @@ interface Props {
   isMobile: boolean;
 }
 
-const TYPE_GRADIENTS: Record<string, string> = {
-  playground:           'linear-gradient(135deg, #a8edbc 0%, #5CB85C 100%)',
-  park:                 'linear-gradient(135deg, #b8f0d4 0%, #3da876 100%)',
-  'splash-pad':         'linear-gradient(135deg, #b3e0f7 0%, #6BB5E0 100%)',
-  'basketball-court':   'linear-gradient(135deg, #ffd4a8 0%, #e8832a 100%)',
-  'tennis-court':       'linear-gradient(135deg, #fff0a0 0%, #d4b800 100%)',
-  'soccer-field':       'linear-gradient(135deg, #b8f0d4 0%, #4a9e5c 100%)',
-  'skate-park':         'linear-gradient(135deg, #d4c4b8 0%, #8D6E63 100%)',
-  'rec-center':         'linear-gradient(135deg, #a8e8e0 0%, #4aa8a0 100%)',
-  'open-field':         'linear-gradient(135deg, #d4f0b0 0%, #8ec84a 100%)',
-  'multi-sport-court':  'linear-gradient(135deg, #ffc8a8 0%, #d46030 100%)',
-  'pocket-park':        'linear-gradient(135deg, #f0d4f8 0%, #a06ab8 100%)',
-  'baseball-diamond':   'linear-gradient(135deg, #ffe4a8 0%, #c8902a 100%)',
-};
+/** OpenStreetMap embed URL showing the exact location with a pin */
+function osmEmbedUrl(lat: number, lng: number) {
+  const delta = 0.004;
+  const bbox = `${lng - delta},${lat - delta * 0.6},${lng + delta},${lat + delta * 0.6}`;
+  return `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat},${lng}`;
+}
 
 function LocationHero({ location }: { location: Location }) {
   const emoji = TYPE_EMOJIS[location.type] ?? '📍';
-  const gradient = TYPE_GRADIENTS[location.type] ?? 'linear-gradient(135deg, #b8f0d4 0%, #5CB85C 100%)';
+  const [lat, lng] = location.coordinates;
 
   return (
-    <div
-      className="relative w-full flex flex-col items-center justify-center"
-      style={{
-        height: '160px',
-        background: gradient,
-      }}
-    >
-      {/* Subtle dot pattern overlay */}
-      <div
-        className="absolute inset-0 opacity-20"
-        style={{
-          backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.8) 1px, transparent 1px)',
-          backgroundSize: '18px 18px',
-        }}
+    <div className="relative w-full overflow-hidden" style={{ height: '180px' }}>
+      <iframe
+        key={location.id}
+        src={osmEmbedUrl(lat, lng)}
+        title={`Map of ${location.name}`}
+        style={{ border: 'none', width: '100%', height: '100%', display: 'block' }}
+        loading="lazy"
+        scrolling="no"
       />
-      <span className="relative text-6xl drop-shadow-md">{emoji}</span>
-      <span className="relative mt-2 text-xs font-bold font-heading text-white/80 uppercase tracking-widest drop-shadow">
-        {TYPE_LABELS[location.type] ?? location.type}
-      </span>
+      {/* Gradient fade at bottom */}
+      <div className="absolute inset-x-0 bottom-0 h-10 pointer-events-none"
+        style={{ background: 'linear-gradient(to top, #FAFAF8, transparent)' }} />
+      {/* Type badge */}
+      <div className="absolute bottom-3 left-4 flex items-center gap-1.5 rounded-full px-2.5 py-1 border border-white/30 shadow"
+        style={{ background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(6px)' }}>
+        <span className="text-sm">{emoji}</span>
+        <span className="text-xs font-bold font-heading" style={{ color: '#8D6E63' }}>
+          {TYPE_LABELS[location.type] ?? location.type}
+        </span>
+      </div>
     </div>
   );
 }
@@ -91,9 +84,20 @@ function WeatherStrip({ lat, lng }: { lat: number; lng: number }) {
             </p>
           </div>
         </div>
-        <span className={`text-xs font-bold px-3 py-1.5 rounded-full ${weather.isGoodForPlay ? 'bg-leafy-green/20 text-leafy-green' : 'bg-sunset-orange/20 text-sunset-orange'}`}>
-          {weather.isGoodForPlay ? '✓ Great day to play!' : 'Check conditions'}
-        </span>
+        {weather.isGoodForPlay ? (
+          <span className="text-xs font-bold px-3 py-1.5 rounded-full bg-leafy-green/20 text-leafy-green">
+            ✓ Great day to play!
+          </span>
+        ) : (
+          <a
+            href="https://www.accuweather.com/en/us/philadelphia/19103/weather-forecast/350540"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs font-bold px-3 py-1.5 rounded-full bg-sunset-orange/20 text-sunset-orange hover:bg-sunset-orange/30 transition-colors"
+          >
+            Check conditions ↗
+          </a>
+        )}
       </div>
     </div>
   );
@@ -131,7 +135,7 @@ export default function LocationDetailPanel({
         <LocationHero location={location} />
         {/* Close button overlaid top-right */}
         <button
-          onClick={onClose}
+          onClick={(e) => { e.stopPropagation(); onClose(); }}
           className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full bg-cloud-white/90 dark:bg-slate-800/90 backdrop-blur-sm text-earth-brown/70 shadow-warm border border-earth-brown/10 hover:bg-cloud-white transition-colors"
           aria-label="Close"
         >
